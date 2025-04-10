@@ -148,7 +148,7 @@ def store_data(limit = 100):
         current_count = cur.fetchone()[0]
         conn.close()
 
-    print(f"✅ Done! You now have {current_count} games stored.")
+    print(f"All Done! You now have {current_count} games stored.")
 
 
 def calculate_average_visits_per_creator():
