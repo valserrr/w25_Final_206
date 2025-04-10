@@ -115,38 +115,34 @@ def store_data(limit = 100):
     conn.close()
     print(f"Inserted {inserted} rows into the database.")
 
-def calculate_average_users_per_genre():
-    """Calculate the average number of users visiting games according to their genre."""
+def calculate_average_visits_per_creator():
+    """Calculate the average number of visits per game by the creator."""
     # Connect to the database
-    conn = sqlite3.connect('final_project.db')
+    conn = sqlite3.connect('roblox.db')
     if conn:
         # Create a cursor to run SQL queries
         cursor = conn.cursor()
-        # SQL query to combine data from both tables and calculate average users per genre
+        # SQL query to combine data from both tables and calculate average visits per creator
         query = '''
-            SELECT genre, AVG(user_count) AS average_users
-            FROM (
-                SELECT genre, user_count FROM roblox_games
-                UNION ALL  -- Combine rows from roblox_games and minecraft_servers
-                SELECT genre, user_count FROM minecraft_servers
-            )
-            GROUP BY genre;
+            SELECT c.username, AVG(g.visits) AS average_visits
+            FROM Creators c
+            INNER JOIN Games g ON c.creator_id = g.creator_id
+            GROUP BY c.username;
         '''
         # Run the query and get all results
         results = cursor.execute(query).fetchall()
 
         # Open a text file to write the results
-        with open('average_users_per_genre.txt', 'w') as file:
-            file.write("Genre\tAverage Users\n")  # Write the header line
+        with open('average_visits_per_creator.txt', 'w') as file:
+            # Write the header line
+            file.write("Creator\tAverage Visits\n")
             for row in results:
-                # Write each genre and its average user count, rounded to 2 decimal places
+            # Write each creator and its average visits, rounded to 2 decimal places
                 file.write(f"{row[0]}\t{round(row[1], 2)}\n")
-        # Commit the changes to the database
         conn.commit()
-        # Close the connection when done
         conn.close()
 
-        print("Average users per genre calculated and saved to average_users_per_genre.txt")
+        print("Average visits per creator calculated and saved to average_visits_per_creator.txt")
     else:
         print("Failed to connect to the database.")
 if __name__ == "__main__":
