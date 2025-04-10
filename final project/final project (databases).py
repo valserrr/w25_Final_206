@@ -7,10 +7,12 @@ import sqlite3
 import requests  # type: ignore
 import bs4 as bsoup  # type: ignore
 from robloxy import Game, User  # type: ignore
+
 def create_tables():
+    """Create the database and tables if they don't exist."""
     conn = sqlite3.connect('roblox.db')
     c = conn.cursor()
-     # Create the Creators table if it doesn't exist
+    # Create the Creators table if it doesn't exist
     c.execute('''
         CREATE TABLE IF NOT EXISTS Creators (
             creator_id INTEGER PRIMARY KEY,
@@ -31,7 +33,6 @@ def create_tables():
     ''')
     conn.commit()
     conn.close()
-
 
 def scrape_game_ids(limit: int = 25) -> list[int]:
     """Scrape Roblox game IDs from the discover page."""
@@ -59,6 +60,7 @@ def scrape_game_ids(limit: int = 25) -> list[int]:
     return list(game_ids)
 
 def scrape_game_creator_info(game_id):
+    """Scrape game creator info from the Roblox API."""
     try:
         game = Game.Game(game_id)
         creator_username = game.Creator()
@@ -101,7 +103,7 @@ def access_database():
     print("Accessed the database and printed the first 100 rows.")
 
 def store_data(limit = 100):
-    '''Store 100 rows in the database'''
+    """Store data in the database."""
     # Create the database and tables if they don't exist
     create_tables()
     conn = sqlite3.connect('roblox.db')
@@ -115,7 +117,7 @@ def store_data(limit = 100):
         if data:
             # Insert creator
             cur.execute('''
-                INSERT OR IGNOREINTO Creators (creator_id, username, followers, account_age)
+                INSERT OR IGNORE INTO Creators (creator_id, username, followers, account_age)
                 VALUES (?, ?, ?, ?)
             ''', (data['creator_id'], data['creator_username'], data['followers'], data['account_age']))
             # Insert game
@@ -130,8 +132,8 @@ def store_data(limit = 100):
     conn.close()
     print(f"Inserted {inserted} rows into the database.")
 
-    def autorun_store_until_100():
-        '''Run store_data repeatedly until at least 100 games exist in the database.'''
+def autorun_store_until_100():
+    """Run store_data repeatedly until at least 100 games exist in the database."""
     conn = sqlite3.connect('roblox.db')
     cur = conn.cursor()
 
@@ -149,7 +151,6 @@ def store_data(limit = 100):
         conn.close()
 
     print(f"All Done! You now have {current_count} games stored.")
-
 
 def calculate_average_visits_per_creator():
     """Calculate the average number of visits per game by the creator."""
