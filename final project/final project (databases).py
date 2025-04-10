@@ -33,17 +33,23 @@ def create_tables():
 
 def scrape_game_ids(limit: int = 25) -> List[int]:
     """Scrape Roblox game IDs from the discover page."""
+    # Set the URL to the Roblox discover page
     url = 'https://www.roblox.com/discover'
     response = requests.get(url)
     soup = bsoup.BeautifulSoup(response.text, 'html.parser')
+    # Find all game links on the page
+    # Note: The class name may change, so check the actual HTML structure
     game_links = soup.find_all('a', class_='game-card-link')
     game_ids = set()
+    # Extract game IDs from the links
+    # Note: The game ID is usually in the URL, e.g., /games/123456789/Game-Name
     for link in game_links:
         href = link.get('href')
         if '/games/' in href:
             try:
                 game_id = int(href.split('/games/')[1].split('/')[0])
                 game_ids.add(game_id)
+      # Limit the number of game IDs to the specified limit
             except ValueError:
                 continue
         if len(game_ids) >= limit:
@@ -52,6 +58,7 @@ def scrape_game_ids(limit: int = 25) -> List[int]:
 
 def access_database():
     '''Access 100 rows in the database'''
+
     pass
 
 def store_data():
