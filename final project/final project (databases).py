@@ -1,6 +1,8 @@
 # Final Project: Databases
-# This code creates a SQLite database with two tables: Creators and Games.
-# It also includes functions to scrape data from APIs or websites, access and store data in the database,
+# This code is part of a final project for a course on databases.
+# The project involves scraping data from Roblox, storing it in a SQLite database, and performing some analysis.
+# The code is organized into several functions, each responsible for a specific task.
+# The code is designed to be modular and reusable, with clear separation of concerns.
 import sqlite3
 import requests  # type: ignore
 import bs4 as bsoup  # type: ignore
@@ -80,10 +82,23 @@ def scrape_game_creator_info(game_id):
         print(f"Failed scraping game creator info for game {game_id}: {e}")
         return None
 
-def access_database(limit= 100):
-    '''Access 100 rows in the database'''
+def access_database():
+    """Access and print the first 100 rows in the Games table."""
+    conn = sqlite3.connect('roblox.db')
+    cur = conn.cursor()
 
-    pass
+    cur.execute('''
+        SELECT Games.title, Games.visits, Creators.username
+        FROM Games
+        JOIN Creators ON Games.creator_id = Creators.creator_id
+        LIMIT 100
+    ''')
+    rows = cur.fetchall()
+    for row in rows:
+        print(f"Game: {row[0]} | Visits: {row[1]} | Creator: {row[2]}")
+
+    conn.close()
+    print("Accessed the database and printed the first 100 rows.")
 
 def store_data(limit = 100):
     '''Store 100 rows in the database'''
