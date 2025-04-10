@@ -8,22 +8,22 @@ def main():
     # Create a connection to the database
     conn = sqlite3.connect('final_project.db')
     c = conn.cursor()
-     # Create the Roblox games table if it doesn't exist
+     # Create the Creators table if it doesn't exist
     c.execute('''
-        CREATE TABLE IF NOT EXISTS roblox_games (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title TEXT,
-            genre TEXT,
-            user_count INTEGER
+        CREATE TABLE IF NOT EXISTS Creators (
+            creator_id PRIMARY KEY,
+            username TEXT,
+            followers INTEGER,
+            account_age INTEGER,
         )
     ''')
-    # Create the Minecraft servers table if it doesn't exist
+    # Create the Games table if it doesn't exist
     c.execute('''
-        CREATE TABLE IF NOT EXISTS minecraft_servers (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            server_name TEXT,
-            genre TEXT,
-            user_count INTEGER
+        CREATE TABLE IF NOT EXISTS Games (
+            game_id PRIMARY KEY,
+            title TEXT,
+            visits INTEGER,
+            creator_id Foreign Key,
         )
     ''')
     # Commit the changes and close the connection

@@ -21,5 +21,3 @@ plt.title('Top 5 Songs')
 plt.tight_layout()  # helps prevent label cut-off
 plt.savefig("top_songs.png")
 pass
-
-"testing commit"
