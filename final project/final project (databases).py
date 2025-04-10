@@ -115,6 +115,27 @@ def store_data(limit = 100):
     conn.close()
     print(f"Inserted {inserted} rows into the database.")
 
+    def autorun_store_until_100():
+        '''Run store_data repeatedly until at least 100 games exist in the database.'''
+    conn = sqlite3.connect('roblox.db')
+    cur = conn.cursor()
+
+    cur.execute('SELECT COUNT(*) FROM Games')
+    current_count = cur.fetchone()[0]
+    conn.close()
+
+    while current_count < 100:
+        print(f"Currently have {current_count} games. Storing more...")
+        store_data(limit=25)
+        conn = sqlite3.connect('roblox.db')
+        cur = conn.cursor()
+        cur.execute('SELECT COUNT(*) FROM Games')
+        current_count = cur.fetchone()[0]
+        conn.close()
+
+    print(f"✅ Done! You now have {current_count} games stored.")
+
+
 def calculate_average_visits_per_creator():
     """Calculate the average number of visits per game by the creator."""
     # Connect to the database
@@ -145,5 +166,3 @@ def calculate_average_visits_per_creator():
         print("Average visits per creator calculated and saved to average_visits_per_creator.txt")
     else:
         print("Failed to connect to the database.")
-if __name__ == "__main__":
-    main()
