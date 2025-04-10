@@ -1,8 +1,9 @@
 # Final Project: Databases
-# This code creates a SQLite database with two tables: roblox_games and minecraft_servers.
+# This code creates a SQLite database with two tables: Creators and Games.
 # It also includes functions to scrape data from APIs or websites, access and store data in the database,
-# and calculate the average number of users visiting games according to their genre.
 import sqlite3
+import requests  # type: ignore
+import bs4 as bsoup  # type: ignore
 
 def main():
     # Create a connection to the database
