@@ -80,14 +80,40 @@ def scrape_game_creator_info(game_id):
         print(f"Failed scraping game creator info for game {game_id}: {e}")
         return None
 
-def access_database():
+def access_database(limit= 100):
     '''Access 100 rows in the database'''
 
     pass
 
-def store_data():
+def store_data(limit = 100):
     '''Store 100 rows in the database'''
-    pass
+    # Create the database and tables if they don't exist
+    create_tables()
+    conn = sqlite3.connect('roblox.db')
+    cur = conn.cursor()
+    # Scrape game IDs
+    game_ids = scrape_game_ids(limit)
+    inserted = 0
+    # Loop through each game ID and scrape its creator info
+    for game_id in game_ids:
+        data = scrape_game_creator_info(game_id)
+        if data:
+            # Insert creator
+            cur.execute('''
+                INSERT OR IGNOREINTO Creators (creator_id, username, followers, account_age)
+                VALUES (?, ?, ?, ?)
+            ''', (data['creator_id'], data['creator_username'], data['followers'], data['account_age']))
+            # Insert game
+            cur.execute('''
+                INSERT OR IGNORE INTO Games (game_id, title, visits, creator_id)
+                VALUES (?, ?, ?, ?)
+            ''', (data['game_id'], data['title'], data['visits'], data['creator_id']))
+            inserted += 1
+            if inserted >= limit:
+                break
+        conn.commit()
+    conn.close()
+    print(f"Inserted {inserted} rows into the database.")
 
 def calculate_average_users_per_genre():
     """Calculate the average number of users visiting games according to their genre."""
