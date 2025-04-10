@@ -4,7 +4,7 @@
 import sqlite3
 import requests  # type: ignore
 import bs4 as bsoup  # type: ignore
-
+from robloxy import Game, User  # type: ignore
 def create_tables():
     conn = sqlite3.connect('roblox.db')
     c = conn.cursor()
@@ -31,7 +31,7 @@ def create_tables():
     conn.close()
 
 
-def scrape_game_ids(limit: int = 25) -> List[int]:
+def scrape_game_ids(limit: int = 25) -> list[int]:
     """Scrape Roblox game IDs from the discover page."""
     # Set the URL to the Roblox discover page
     url = 'https://www.roblox.com/discover'
@@ -55,6 +55,30 @@ def scrape_game_ids(limit: int = 25) -> List[int]:
         if len(game_ids) >= limit:
             break
     return list(game_ids)
+
+def scrape_game_creator_info(game_id):
+    try:
+        game = Game.Game(game_id)
+        creator_username = game.Creator()
+        visits = game.Visits()
+        title = game.Title()
+
+        creator = User.User(creator_username)
+        creator_id = creator.Id
+        followers = creator.FollowersCount()
+        account_age = creator.AccountAge()
+        return {
+            'game_id': game_id,
+            'title': title,
+            'visits': visits,
+            'creator_id': creator_id,
+            'creator_username': creator_username,
+            'followers': followers,
+            'account_age': account_age,
+        }
+    except Exception as e:
+        print(f"Failed scraping game creator info for game {game_id}: {e}")
+        return None
 
 def access_database():
     '''Access 100 rows in the database'''
