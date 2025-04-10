@@ -1,23 +1,61 @@
 #This is where we will create the data visualization for the data we have collected.
-import matplotlib.pyplot as plt # type: ignore
-import pandas as pd # type: ignore
+import matplotlib.pyplot as plt 
+import sqlite3
 
 def visualize_scatterplot():
-    '''Create a scatterplot of the data.'''
+    """Generate a scatter plot of creator followers vs game visits."""
+    conn = sqlite3.connect('roblox.db')
+    cur = conn.cursor()
 
-    pass
+    cur.execute('''
+        SELECT Creators.followers, Games.visits
+        FROM Games
+        JOIN Creators ON Games.creator_id = Creators.creator_id
+        WHERE Creators.followers IS NOT NULL AND Games.visits IS NOT NULL
+        LIMIT 100
+    ''')
+
+    data = cur.fetchall()
+    conn.close()
+
+    followers = [row[0] for row in data]
+    visits = [row[1] for row in data]
+
+    plt.figure(figsize=(10, 6))
+    plt.scatter(followers, visits, color='green', alpha=0.6)
+    plt.title("Followers vs Game Visits")
+    plt.xlabel("Followers")
+    plt.ylabel("Visits")
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig("followers_vs_visits_scatter.png")
+    plt.show()
+    visualize_scatterplot()
 
 def visualize_bargraoh():
-    '''Create a bar graph of the data.'''
-#example of bar chart 
-songs = list(top_songs.keys())[::-1]
-count = list(top_songs.values())[::-1]
+    """Generate a bar chart showing visits per game (top 10)."""
+    conn = sqlite3.connect('roblox.db')
+    cur = conn.cursor()
 
-plt.figure(figsize=(10, 6))  # adjust as needed
-plt.barh(songs, count, color='blue')
-plt.xlabel('Play counts')
-plt.ylabel('Song Name')
-plt.title('Top 5 Songs')
-plt.tight_layout()  # helps prevent label cut-off
-plt.savefig("top_songs.png")
-pass
+    cur.execute('''
+        SELECT title, visits
+        FROM Games
+        ORDER BY visits DESC
+        LIMIT 10
+    ''')
+
+    data = cur.fetchall()
+    conn.close()
+
+    titles = [row[0][:15] + '...' if len(row[0]) > 15 else row[0] for row in data]
+    visits = [row[1] for row in data]
+
+    plt.figure(figsize=(12, 6))
+    plt.bar(titles, visits, color='skyblue')
+    plt.title("Top 10 Games by Visits")
+    plt.xlabel("Game Title")
+    plt.ylabel("Visits")
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.savefig("top_games_bargraph.png")
+    plt.show()
