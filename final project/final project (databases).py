@@ -5,14 +5,13 @@ import sqlite3
 import requests  # type: ignore
 import bs4 as bsoup  # type: ignore
 
-def main():
-    # Create a connection to the database
-    conn = sqlite3.connect('final_project.db')
+def create_tables():
+    conn = sqlite3.connect('roblox.db')
     c = conn.cursor()
      # Create the Creators table if it doesn't exist
     c.execute('''
         CREATE TABLE IF NOT EXISTS Creators (
-            creator_id PRIMARY KEY,
+            creator_id INTEGER PRIMARY KEY,
             username TEXT,
             followers INTEGER,
             account_age INTEGER,
@@ -21,20 +20,35 @@ def main():
     # Create the Games table if it doesn't exist
     c.execute('''
         CREATE TABLE IF NOT EXISTS Games (
-            game_id PRIMARY KEY,
+            game_id INTEGER PRIMARY KEY,
             title TEXT,
             visits INTEGER,
-            creator_id Foreign Key,
+            creator_id INTEGER,
+              FOREIGN KEY (creator_id) REFERENCES Creators (creator_id)
         )
     ''')
-    # Commit the changes and close the connection
     conn.commit()
     conn.close()
 
-def scrape_data():
-    '''access either two APIs or one API and one website with BSoup 
-    (e.g. Facebook, GitHub, Gmail, Yelp, etc). '''
-    pass
+
+def scrape_game_ids(limit: int = 25) -> List[int]:
+    """Scrape Roblox game IDs from the discover page."""
+    url = 'https://www.roblox.com/discover'
+    response = requests.get(url)
+    soup = bsoup.BeautifulSoup(response.text, 'html.parser')
+    game_links = soup.find_all('a', class_='game-card-link')
+    game_ids = set()
+    for link in game_links:
+        href = link.get('href')
+        if '/games/' in href:
+            try:
+                game_id = int(href.split('/games/')[1].split('/')[0])
+                game_ids.add(game_id)
+            except ValueError:
+                continue
+        if len(game_ids) >= limit:
+            break
+    return list(game_ids)
 
 def access_database():
     '''Access 100 rows in the database'''
