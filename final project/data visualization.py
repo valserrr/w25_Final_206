@@ -33,14 +33,12 @@ def visualize_scatterplot():
     plt.ylabel("Visits")
     plt.grid(True)
     plt.tight_layout()
-    plt.savefig("followers_vs_visits_scatter.png")
-    plt.show()
     # Save the scatterplot as a PNG file
     plt.savefig("followers_vs_visits_scatter.png")
     # Display the scatterplot
     plt.show()
 
-def visualize_bargraoh():
+def visualize_bargraph():
     """Generate a bar chart showing visits per game (top 10)."""
     # Connect to the SQLite database
     conn = sqlite3.connect('roblox.db')
