@@ -6,7 +6,7 @@
 import sqlite3
 import requests  # type: ignore
 import bs4 as bsoup  # type: ignore
-from robloxy import Game, User  # type: ignore
+from robloxpy import Game, User  # type: ignore
 
 def create_tables():
     """Create the database and tables if they don't exist."""
