@@ -88,6 +88,7 @@ def visualize_top_twitch_games():
 
     # Fetch the data from the database
     data = cur.fetchall()
+    print(f"Fetched {len(data)} rows for scatterplot.")
     conn.close()
 
     # Extract the game names and box art URLs
@@ -104,3 +105,27 @@ def visualize_top_twitch_games():
     plt.tight_layout()
     plt.savefig("twitch_top_games_bar.png")
     plt.show()
+
+    if __name__ == "__main__":
+        print("Starting visualization script...")
+
+        try:
+            visualize_scatterplot()
+            print("Scatterplot done.")
+        except Exception as e:
+            print(f"Scatterplot failed: {e}")
+
+        try:
+            visualize_bargraph()
+            print("Bargraph done.")
+        except Exception as e:
+            print(f"Bargraph failed: {e}")
+
+        try:
+            visualize_top_twitch_games()
+            print("Twitch graph done.")
+        except Exception as e:
+            print(f"Twitch graph failed: {e}")
+
+        print("All visualizations attempted.")
+  
