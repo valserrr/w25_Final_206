@@ -13,7 +13,8 @@ def visualize_scatterplot():
         SELECT Creators.followers, Games.visits
         FROM Games
         JOIN Creators ON Games.creator_id = Creators.creator_id
-        WHERE Creators.followers IS NOT NULL AND Games.visits IS NOT NULL
+        WHERE Creators.followers IS NOT NULL AND Games.visits IS NOT NU
+        LL
         LIMIT 100
     ''')
 
