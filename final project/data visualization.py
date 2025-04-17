@@ -13,8 +13,7 @@ def visualize_scatterplot():
         SELECT Creators.followers, Games.visits
         FROM Games
         JOIN Creators ON Games.creator_id = Creators.creator_id
-        WHERE Creators.followers IS NOT NULL AND Games.visits IS NOT NU
-        LL
+        WHERE Creators.followers IS NOT NULL AND Games.visits IS NOT NULL
         LIMIT 100
     ''')
 
@@ -105,3 +104,10 @@ def visualize_top_twitch_games():
     plt.tight_layout()
     plt.savefig("twitch_top_games_bar.png")
     plt.show()
+
+if __name__ == "__main__":
+    # Call the visualization functions
+    visualize_scatterplot()
+    visualize_bargraph()
+    visualize_top_twitch_games()
+    print("Data visualizations generated successfully.")
