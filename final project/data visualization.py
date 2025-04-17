@@ -101,3 +101,25 @@ def visualize_games_per_year(data):
     plt.tight_layout()
     plt.savefig("games_per_year.png")
     plt.show()
+def visualize_top_twitch_games():
+    conn = sqlite3.connect('roblox.db')
+    cur = conn.cursor()
+    cur.execute('''
+        SELECT name, viewers FROM TwitchGames
+        ORDER BY viewers DESC
+        LIMIT 10
+    ''')
+    data = cur.fetchall()
+    conn.close()
+
+    names = [row[0] for row in data]
+    viewers = [row[1] for row in data]
+
+    plt.figure(figsize=(12, 6))
+    plt.bar(names, viewers, color='orchid')
+    plt.title("Top 10 Twitch Games by Viewers")
+    plt.ylabel("Viewers")
+    plt.xticks(rotation=45, ha='right')
+    plt.tight_layout()
+    plt.savefig("twitch_top_games_bar.png")
+    plt.show()
