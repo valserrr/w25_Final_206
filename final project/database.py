@@ -102,3 +102,11 @@ def initialize_twitch_database(db_file):
             close_connection(conn)
     else:
         print("Failed to initialize Twitch database.")
+
+# Call store_data to create and populate the database tables
+store_data(limit=25)  # You can increase to 100 if needed
+
+# Get Twitch token and store Twitch games
+token = get_app_access_token(client_id, client_secret)
+if token:
+    store_twitch_games(token, client_id)
