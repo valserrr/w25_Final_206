@@ -1,4 +1,4 @@
-#This is where we will create the data visualization for the data we have collected.
+# This is where we will create the data visualization for the data we have collected.
 import matplotlib.pyplot as plt  # type: ignore
 import sqlite3
 
@@ -73,52 +73,33 @@ def visualize_bargraph():
     # Display the chart
     plt.show()
 
-# Bonus B: Additional Visualizations
-def visualize_avg_rating_by_genre(data):
-    genres = [row[0] for row in data]
-    ratings = [row[1] for row in data]
-
-    plt.figure(figsize=(10, 6))
-    plt.bar(genres, ratings, color='mediumpurple')
-    plt.xticks(rotation=45)
-    plt.title("Average Rating by Genre")
-    plt.xlabel("Genre")
-    plt.ylabel("Average Rating")
-    plt.tight_layout()
-    plt.savefig("avg_rating_by_genre.png")
-    plt.show()
-
-def visualize_games_per_year(data):
-    years = [row[0] for row in data]
-    counts = [row[1] for row in data]
-
-    plt.figure(figsize=(10, 6))
-    plt.plot(years, counts, marker='o', color='teal')
-    plt.title("Games Released Per Year")
-    plt.xlabel("Year")
-    plt.ylabel("Number of Games")
-    plt.grid(True)
-    plt.tight_layout()
-    plt.savefig("games_per_year.png")
-    plt.show()
 def visualize_top_twitch_games():
+    """Generate a bar chart of the top 10 Twitch games by name."""
+    # Connect to the SQLite database
     conn = sqlite3.connect('roblox.db')
     cur = conn.cursor()
+
+    # Execute a SQL query to select the top 10 Twitch games
     cur.execute('''
-        SELECT name, viewers FROM TwitchGames
-        ORDER BY viewers DESC
+        SELECT name, box_art_url
+        FROM TwitchGames
         LIMIT 10
     ''')
+
+    # Fetch the data from the database
     data = cur.fetchall()
     conn.close()
 
+    # Extract the game names and box art URLs
     names = [row[0] for row in data]
-    viewers = [row[1] for row in data]
+    box_art_urls = [row[1] for row in data]
 
+    # Create a bar chart
     plt.figure(figsize=(12, 6))
-    plt.bar(names, viewers, color='orchid')
-    plt.title("Top 10 Twitch Games by Viewers")
-    plt.ylabel("Viewers")
+    plt.bar(names, range(len(names)), color='orchid')
+    plt.title("Top 10 Twitch Games")
+    plt.xlabel("Game Name")
+    plt.ylabel("Index")
     plt.xticks(rotation=45, ha='right')
     plt.tight_layout()
     plt.savefig("twitch_top_games_bar.png")
