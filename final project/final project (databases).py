@@ -21,7 +21,7 @@ def create_tables():
             creator_id INTEGER PRIMARY KEY,
             username TEXT,
             followers INTEGER,
-            account_age INTEGER,
+            account_age INTEGER
         )
     ''')
     # Create the Games table if it doesn't exist
