@@ -74,3 +74,30 @@ def visualize_bargraph():
     plt.show()
 
 # Bonus B: Additional Visualizations
+def visualize_avg_rating_by_genre(data):
+    genres = [row[0] for row in data]
+    ratings = [row[1] for row in data]
+
+    plt.figure(figsize=(10, 6))
+    plt.bar(genres, ratings, color='mediumpurple')
+    plt.xticks(rotation=45)
+    plt.title("Average Rating by Genre")
+    plt.xlabel("Genre")
+    plt.ylabel("Average Rating")
+    plt.tight_layout()
+    plt.savefig("avg_rating_by_genre.png")
+    plt.show()
+
+def visualize_games_per_year(data):
+    years = [row[0] for row in data]
+    counts = [row[1] for row in data]
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(years, counts, marker='o', color='teal')
+    plt.title("Games Released Per Year")
+    plt.xlabel("Year")
+    plt.ylabel("Number of Games")
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig("games_per_year.png")
+    plt.show()

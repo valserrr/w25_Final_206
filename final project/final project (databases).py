@@ -4,9 +4,12 @@
 # The code is organized into several functions, each responsible for a specific task.
 # The code is designed to be modular and reusable, with clear separation of concerns.
 import sqlite3
-import requests  # type: ignore
-import bs4 as bsoup  # type: ignore
-from robloxpy import Game, User  # type: ignore
+import requests # type: ignore
+import bs4 as bsoup # type: ignore
+# Importing the robloxpy library to interact with Roblox API
+# Note: Make sure to install the robloxpy library using pip
+# pip install robloxpy
+from robloxpy import Game, User # type: ignore
 
 def create_tables():
     """Create the database and tables if they don't exist."""
@@ -184,4 +187,12 @@ def calculate_average_visits_per_creator():
         print("Failed to connect to the database.")
 
 # Bonus A: Additional API Source (Up to 30 pts)
-
+def get_app_access_token(client_id, client_secret):
+    url = 'https://id.twitch.tv/oauth2/token'
+    params = {
+        'client_id': client_id,
+        'client_secret': client_secret,
+        'grant_type': 'client_credentials'
+    }
+    response = requests.post(url, params=params)
+    return response.json().get('access_token')
