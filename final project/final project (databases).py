@@ -182,3 +182,6 @@ def calculate_average_visits_per_creator():
         print("Average visits per creator calculated and saved to average_visits_per_creator.txt")
     else:
         print("Failed to connect to the database.")
+
+# Bonus A: Additional API Source (Up to 30 pts)
+

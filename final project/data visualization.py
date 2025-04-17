@@ -72,3 +72,5 @@ def visualize_bargraph():
     plt.savefig("top_games_bargraph.png")
     # Display the chart
     plt.show()
+
+# Bonus B: Additional Visualizations
