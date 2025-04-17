@@ -2,9 +2,9 @@
 # This code is part of a final project for a course on databases.
 # The project involves scraping data from Roblox, storing it in a SQLite database, and performing some analysis.
 import sqlite3
-import requests  # type: ignore
-import bs4 as bsoup  # type: ignore
-from robloxpy import Game, User  # type: ignore
+import requests
+import bs4 as bsoup  
+from robloxpy import Game, User  
 
 def create_tables():
     """Create the database and tables if they don't exist."""
