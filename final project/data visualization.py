@@ -1,5 +1,5 @@
 # This is where we will create the data visualization for the data we have collected.
-import matplotlib.pyplot as plt # type: ignore
+import matplotlib.pyplot as plt 
 import sqlite3
 
 def visualize_scatterplot():
