@@ -2,6 +2,7 @@
 import sqlite3
 from sqlite3 import Error
 import requests  # type: ignore
+from final_project.databases import store_data, store_twitch_games # type: ignore
 
 # Twitch API credentials
 client_id = "09wmqv5mqgpcxec5wazvja5y89p1fs"
