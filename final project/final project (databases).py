@@ -187,12 +187,60 @@ def calculate_average_visits_per_creator():
         print("Failed to connect to the database.")
 
 # Bonus A: Additional API Source (Up to 30 pts)
-def get_app_access_token(client_id, client_secret):
-    url = 'https://id.twitch.tv/oauth2/token'
-    params = {
-        'client_id': client_id,
-        'client_secret': client_secret,
-        'grant_type': 'client_credentials'
+def create_twitch_table():
+    conn = sqlite3.connect('roblox.db')
+    cur = conn.cursor()
+    cur.execute('''
+        CREATE TABLE IF NOT EXISTS TwitchGames (
+            game_id INTEGER PRIMARY KEY,
+            name TEXT,
+            box_art_url TEXT,
+            viewers INTEGER
+        )
+    ''')
+    conn.commit()
+    conn.close()
+def fetch_top_games(token, client_id, limit=100):
+    headers = {
+        'Client-ID': client_id,
+        'Authorization': f'Bearer {token}'
     }
-    response = requests.post(url, params=params)
-    return response.json().get('access_token')
+    url = f'https://api.twitch.tv/helix/games/top?first={limit}'
+    response = requests.get(url, headers=headers)
+    return response.json().get('data', [])
+
+def store_twitch_games(token, client_id):
+    games = fetch_top_games(token, client_id)
+    conn = sqlite3.connect('roblox.db')
+    cur = conn.cursor()
+
+    for game in games:
+        game_id = int(game['id'])
+        name = game['name']
+        box_art_url = game['box_art_url']
+        viewers = game.get('viewers', 0)  # default if missing
+        cur.execute('''
+            INSERT OR IGNORE INTO TwitchGames (game_id, name, box_art_url, viewers)
+            VALUES (?, ?, ?, ?)
+        ''', (game_id, name, box_art_url, viewers))
+
+    conn.commit()
+    conn.close()
+    print("Stored Twitch games in the database.")
+def write_twitch_analysis_to_txt():
+    conn = sqlite3.connect('roblox.db')
+    cur = conn.cursor()
+    # Top 10 games by viewers
+    cur.execute('''
+        SELECT name, viewers FROM TwitchGames
+        ORDER BY viewers DESC
+        LIMIT 10
+    ''')
+    top_games = cur.fetchall()
+    with open('twitch_top_games.txt', 'w') as f:
+        f.write("Top 10 Games by Viewers:\n")
+        for name, viewers in top_games:
+            f.write(f"{name} — {viewers} viewers\n")
+
+    conn.close()
+    print("Wrote Twitch game analysis to twitch_top_games.txt")
