@@ -1,81 +1,168 @@
 # Final Project: Databases
-# This code creates a SQLite database with two tables: roblox_games and minecraft_servers.
-# It also includes functions to scrape data from APIs or websites, access and store data in the database,
-# and calculate the average number of users visiting games according to their genre.
+# This code is part of a final project for a course on databases.
+# The project involves scraping data from Roblox, storing it in a SQLite database, and performing some analysis.
 import sqlite3
+import requests  # type: ignore
+import bs4 as bsoup  # type: ignore
+from robloxpy import Game, User  # type: ignore
 
-def main():
-    # Create a connection to the database
-    conn = sqlite3.connect('final_project.db')
+def create_tables():
+    """Create the database and tables if they don't exist."""
+    conn = sqlite3.connect('roblox.db')
     c = conn.cursor()
-     # Create the Roblox games table if it doesn't exist
+    # Enable foreign key constraints
+    c.execute("PRAGMA foreign_keys = ON")
+    # Create the Creators table
     c.execute('''
-        CREATE TABLE IF NOT EXISTS roblox_games (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+        CREATE TABLE IF NOT EXISTS Creators (
+            creator_id INTEGER PRIMARY KEY,
+            username TEXT,
+            followers INTEGER,
+            account_age INTEGER
+        )
+    ''')
+    # Create the Games table
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS Games (
+            game_id INTEGER PRIMARY KEY,
             title TEXT,
-            genre TEXT,
-            user_count INTEGER
+            visits INTEGER,
+            creator_id INTEGER,
+            FOREIGN KEY (creator_id) REFERENCES Creators (creator_id)
         )
     ''')
-    # Create the Minecraft servers table if it doesn't exist
+    # Create the TwitchGames table
     c.execute('''
-        CREATE TABLE IF NOT EXISTS minecraft_servers (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            server_name TEXT,
-            genre TEXT,
-            user_count INTEGER
+        CREATE TABLE IF NOT EXISTS TwitchGames (
+            game_id INTEGER PRIMARY KEY,
+            name TEXT,
+            box_art_url TEXT
         )
     ''')
-    # Commit the changes and close the connection
     conn.commit()
     conn.close()
 
-def scrape_data():
-    '''access either two APIs or one API and one website with BSoup 
-    (e.g. Facebook, GitHub, Gmail, Yelp, etc). '''
-    pass
+def scrape_game_ids(limit: int = 25) -> list[int]:
+    """Scrape Roblox game IDs from the discover page."""
+    url = 'https://www.roblox.com/discover'
+    response = requests.get(url)
+    soup = bsoup.BeautifulSoup(response.text, 'html.parser')
+    game_links = soup.find_all('a', class_='game-card-link')
+    game_ids = set()
+    for link in game_links:
+        href = link.get('href')
+        if '/games/' in href:
+            try:
+                game_id = int(href.split('/games/')[1].split('/')[0])
+                game_ids.add(game_id)
+            except ValueError:
+                continue
+        if len(game_ids) >= limit:
+            break
+    return list(game_ids)
 
-def access_database():
-    '''Access 100 rows in the database'''
-    pass
+def scrape_game_creator_info(game_id):
+    """Scrape game creator info from the Roblox API."""
+    try:
+        game = Game.Game(game_id)
+        creator_username = game.Creator()
+        visits = game.Visits()
+        title = game.Title()
 
-def store_data():
-    '''Store 100 rows in the database'''
-    pass
+        creator = User.User(creator_username)
+        creator_id = creator.Id
+        followers = creator.FollowersCount()
+        account_age = creator.AccountAge()
+        return {
+            'game_id': game_id,
+            'title': title,
+            'visits': visits,
+            'creator_id': creator_id,
+            'creator_username': creator_username,
+            'followers': followers,
+            'account_age': account_age,
+        }
+    except Exception as e:
+        print(f"Failed scraping game creator info for game {game_id}: {e}")
+        return None
 
-def calculate_average_users_per_genre():
-    """Calculate the average number of users visiting games according to their genre."""
-    # Connect to the database
-    conn = sqlite3.connect('final_project.db')
-    if conn:
-        # Create a cursor to run SQL queries
-        cursor = conn.cursor()
-        # SQL query to combine data from both tables and calculate average users per genre
-        query = '''
-            SELECT genre, AVG(user_count) AS average_users
-            FROM (
-                SELECT genre, user_count FROM roblox_games
-                UNION ALL  -- Combine rows from roblox_games and minecraft_servers
-                SELECT genre, user_count FROM minecraft_servers
-            )
-            GROUP BY genre;
-        '''
-        # Run the query and get all results
-        results = cursor.execute(query).fetchall()
-
-        # Open a text file to write the results
-        with open('average_users_per_genre.txt', 'w') as file:
-            file.write("Genre\tAverage Users\n")  # Write the header line
-            for row in results:
-                # Write each genre and its average user count, rounded to 2 decimal places
-                file.write(f"{row[0]}\t{round(row[1], 2)}\n")
-        # Commit the changes to the database
+def store_data(limit=100):
+    """Store data in the database."""
+    create_tables()
+    conn = sqlite3.connect('roblox.db')
+    cur = conn.cursor()
+    cur.execute("PRAGMA foreign_keys = ON")
+    game_ids = scrape_game_ids(limit)
+    inserted = 0
+    for game_id in game_ids:
+        data = scrape_game_creator_info(game_id)
+        if data:
+            cur.execute('''
+                INSERT OR IGNORE INTO Creators (creator_id, username, followers, account_age)
+                VALUES (?, ?, ?, ?)
+            ''', (data['creator_id'], data['creator_username'], data['followers'], data['account_age']))
+            cur.execute('''
+                INSERT OR IGNORE INTO Games (game_id, title, visits, creator_id)
+                VALUES (?, ?, ?, ?)
+            ''', (data['game_id'], data['title'], data['visits'], data['creator_id']))
+            inserted += 1
+            if inserted >= limit:
+                break
         conn.commit()
-        # Close the connection when done
-        conn.close()
+    conn.close()
+    print(f"Inserted {inserted} rows into the database.")
 
-        print("Average users per genre calculated and saved to average_users_per_genre.txt")
-    else:
-        print("Failed to connect to the database.")
-if __name__ == "__main__":
-    main()
+def fetch_top_games(token, client_id, limit=100):
+    """Fetch the top games from the Twitch API."""
+    headers = {
+        'Client-ID': client_id,
+        'Authorization': f'Bearer {token}'
+    }
+    url = f'https://api.twitch.tv/helix/games/top?first={limit}'
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        return response.json().get('data', [])
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching data from Twitch API: {e}")
+        return []
+
+def store_twitch_games(token, client_id):
+    """Store Twitch games data in the database."""
+    create_tables()  # Ensure the table exists
+    games = fetch_top_games(token, client_id)
+    conn = sqlite3.connect('roblox.db')
+    cur = conn.cursor()
+    cur.execute("PRAGMA foreign_keys = ON")
+    for game in games:
+        game_id = int(game['id'])
+        name = game['name']
+        box_art_url = game['box_art_url']
+        cur.execute('''
+            INSERT OR IGNORE INTO TwitchGames (game_id, name, box_art_url)
+            VALUES (?, ?, ?)
+        ''', (game_id, name, box_art_url))
+    conn.commit()
+    conn.close()
+    print("Stored Twitch games in the database.")
+
+def write_twitch_analysis_to_txt():
+    """Write the top 10 Twitch games to a text file."""
+    try:
+        conn = sqlite3.connect('roblox.db')
+        cur = conn.cursor()
+        cur.execute('''
+            SELECT name FROM TwitchGames
+            LIMIT 10
+        ''')
+        top_games = cur.fetchall()
+        conn.close()
+        with open('twitch_top_games.txt', 'w') as f:
+            f.write("Top 10 Games:\n")
+            for name, in top_games:
+                f.write(f"{name}\n")
+        print("Wrote Twitch game analysis to twitch_top_games.txt")
+    except sqlite3.Error as e:
+        print(f"Database error: {e}")
+    except Exception as e:
+        print(f"Unexpected error: {e}")
