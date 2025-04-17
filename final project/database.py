@@ -2,6 +2,8 @@
 import sqlite3
 from sqlite3 import Error
 import requests # type: ignore
+client_id = "09wmqv5mqgpcxec5wazvja5y89p1fs"
+client_secret = "pwr99bomrk9shnk1ren9hdogickwam"
 
 def create_connection(db_file):
     """ create a database connection to a SQLite database """
