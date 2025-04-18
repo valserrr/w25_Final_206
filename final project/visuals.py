@@ -2,7 +2,6 @@
 import matplotlib.pyplot as plt 
 import sqlite3
 
-from final_project_databases import store_data, store_twitch_games
 from visuals import visualize_scatterplot
 # Call these once to populate the database
 store_data(limit=25)

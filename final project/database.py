@@ -2,7 +2,8 @@
 import sqlite3
 from sqlite3 import Error
 import requests  # type: ignore
-from final_project_databases import store_data, store_twitch_games
+from visuals import visualize_scatterplot
+from robloxpy import Game, User 
 
 # Twitch API credentials
 client_id = "09wmqv5mqgpcxec5wazvja5y89p1fs"
