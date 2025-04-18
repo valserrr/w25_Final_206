@@ -166,3 +166,7 @@ def write_twitch_analysis_to_txt():
         print(f"Database error: {e}")
     except Exception as e:
         print(f"Unexpected error: {e}")
+
+    if __name__ == "__main__":
+        create_tables()
+        store_data(25)
