@@ -3,7 +3,7 @@
 # The project involves scraping data from Roblox, storing it in a SQLite database, and performing some analysis.
 import sqlite3
 import requests  # type: ignore
-import bs4 as bsoup  # type: ignore
+from bs4 import BeautifulSoup  # type: ignore
 from robloxpy import Game, User  # type: ignore
 
 def create_tables():
@@ -46,12 +46,12 @@ def scrape_game_ids(limit: int = 25) -> list[int]:
     """Scrape Roblox game IDs from the discover page."""
     url = 'https://www.roblox.com/discover'
     response = requests.get(url)
-    soup = bsoup.BeautifulSoup(response.text, 'html.parser')
+    soup = BeautifulSoup(response.text, 'html.parser')
     game_links = soup.find_all('a', class_='game-card-link')
     game_ids = set()
     for link in game_links:
         href = link.get('href')
-        if '/games/' in href:
+        if href and '/games/' in href:
             try:
                 game_id = int(href.split('/games/')[1].split('/')[0])
                 game_ids.add(game_id)
@@ -166,3 +166,11 @@ def write_twitch_analysis_to_txt():
         print(f"Database error: {e}")
     except Exception as e:
         print(f"Unexpected error: {e}")
+
+if __name__ == "__main__":
+    store_data(limit=25)
+    # Get your Twitch token before this or call the function that fetches it
+    # Example usage (replace with real values):
+    # token = get_app_access_token(client_id, client_secret)
+    # store_twitch_games(token, client_id)
+    # write_twitch_analysis_to_txt()

@@ -1,7 +1,7 @@
 # Databases we will use in this project.
 import sqlite3
 from sqlite3 import Error
-import requests  # type: ignore
+import requests # type: ignore
 
 # Twitch API credentials
 client_id = "09wmqv5mqgpcxec5wazvja5y89p1fs"
