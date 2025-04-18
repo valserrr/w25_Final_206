@@ -1,5 +1,5 @@
 # This is where we will create the data visualization for the data we have collected.
-import matplotlib.pyplot as plt  # type: ignore
+import matplotlib.pyplot as plt 
 import sqlite3
 
 def visualize_scatterplot():
@@ -106,6 +106,7 @@ def visualize_top_twitch_games():
     plt.savefig("twitch_top_games_bar.png")
     plt.show()
 
+<<<<<<< HEAD:final project/data visualization.py
     if __name__ == "__main__":
         print("Starting visualization script...")
 
@@ -129,3 +130,11 @@ def visualize_top_twitch_games():
 
         print("All visualizations attempted.")
   
+=======
+if __name__ == "__main__":
+    # Call the visualization functions
+    visualize_scatterplot()
+    visualize_bargraph()
+    visualize_top_twitch_games()
+    print("Data visualizations generated successfully.")
+>>>>>>> 227240c859b79fae1f3e431336567386c127055d:final project/visuals.py

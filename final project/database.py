@@ -1,7 +1,9 @@
 # Databases we will use in this project.
 import sqlite3
 from sqlite3 import Error
-import requests # type: ignore
+import requests
+from visuals import visualize_scatterplot
+from robloxpy import Game, User 
 
 # Twitch API credentials
 client_id = "09wmqv5mqgpcxec5wazvja5y89p1fs"
@@ -101,3 +103,42 @@ def initialize_twitch_database(db_file):
             close_connection(conn)
     else:
         print("Failed to initialize Twitch database.")
+def store_twitch_games(token, client_id):
+    """
+    Store Twitch games in the database using the Twitch API.
+    :param token: Twitch API access token.
+    :param client_id: Twitch API client ID.
+    """
+    url = 'https://api.twitch.tv/helix/games/top'
+    headers = {
+        'Authorization': f'Bearer {token}',
+        'Client-Id': client_id
+    }
+    params = {'first': 100}  # Fetch up to 100 games
+    conn = create_twitch_connection("twitch.db")
+    if conn:
+        try:
+            response = requests.get(url, headers=headers, params=params)
+            response.raise_for_status()
+            games = response.json().get('data', [])
+            cur = conn.cursor()
+            for game in games:
+                cur.execute('''
+                    INSERT OR IGNORE INTO TwitchGames (game_id, name, box_art_url)
+                    VALUES (?, ?, ?)
+                ''', (game['id'], game['name'], game['box_art_url']))
+            conn.commit()
+            print("Twitch games stored successfully.")
+        except requests.exceptions.RequestException as e:
+            print(f"Error fetching Twitch games: {e}")
+        except Error as e:
+            print(f"Error storing Twitch games in database: {e}")
+        finally:
+            close_connection(conn)
+    else:
+        print("Failed to store Twitch games.")
+
+# Get Twitch token and store Twitch games
+token = get_app_access_token(client_id, client_secret)
+if token:
+    store_twitch_games(token, client_id)
