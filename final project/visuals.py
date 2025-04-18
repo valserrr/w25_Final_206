@@ -1,13 +1,6 @@
 # This is where we will create the data visualization for the data we have collected.
 import matplotlib.pyplot as plt 
 import sqlite3
-from visuals import visualize_scatterplot
-# Call these once to populate the database
-# Only do this if you want Twitch data
-# (Make sure to get a valid token first)
-# token = get_app_access_token(client_id, client_secret)
-# if token:
-#     store_twitch_games(token, client_id)
 
 def visualize_scatterplot():
     """Generate a scatter plot of creator followers vs game visits."""
