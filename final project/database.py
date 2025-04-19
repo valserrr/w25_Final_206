@@ -141,4 +141,6 @@ def store_twitch_games(token, client_id):
 # Get Twitch token and store Twitch games
 token = get_app_access_token(client_id, client_secret)
 if token:
+    initialize_twitch_database("twitch.db")  # <- Add this line
     store_twitch_games(token, client_id)
+    

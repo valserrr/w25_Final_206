@@ -2,15 +2,9 @@
 # This code is part of a final project for a course on databases.
 # The project involves scraping data from Roblox, storing it in a SQLite database, and performing some analysis.
 import sqlite3
-<<<<<<< HEAD:final project/final project (databases).py
-import requests  # type: ignore
-from bs4 import BeautifulSoup  # type: ignore
-from robloxpy import Game, User  # type: ignore
-=======
 import requests
 import bs4 as bsoup  
 from robloxpy import Game, User  
->>>>>>> 227240c859b79fae1f3e431336567386c127055d:final project/final_project_databases.py
 
 def create_tables():
     """Create the database and tables if they don't exist."""
@@ -173,16 +167,6 @@ def write_twitch_analysis_to_txt():
     except Exception as e:
         print(f"Unexpected error: {e}")
 
-<<<<<<< HEAD:final project/final project (databases).py
-if __name__ == "__main__":
-    store_data(limit=25)
-    # Get your Twitch token before this or call the function that fetches it
-    # Example usage (replace with real values):
-    # token = get_app_access_token(client_id, client_secret)
-    # store_twitch_games(token, client_id)
-    # write_twitch_analysis_to_txt()
-=======
     if __name__ == "__main__":
         create_tables()
         store_data(25)
->>>>>>> 227240c859b79fae1f3e431336567386c127055d:final project/final_project_databases.py

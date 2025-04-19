@@ -106,35 +106,9 @@ def visualize_top_twitch_games():
     plt.savefig("twitch_top_games_bar.png")
     plt.show()
 
-<<<<<<< HEAD:final project/data visualization.py
-    if __name__ == "__main__":
-        print("Starting visualization script...")
-
-        try:
-            visualize_scatterplot()
-            print("Scatterplot done.")
-        except Exception as e:
-            print(f"Scatterplot failed: {e}")
-
-        try:
-            visualize_bargraph()
-            print("Bargraph done.")
-        except Exception as e:
-            print(f"Bargraph failed: {e}")
-
-        try:
-            visualize_top_twitch_games()
-            print("Twitch graph done.")
-        except Exception as e:
-            print(f"Twitch graph failed: {e}")
-
-        print("All visualizations attempted.")
-  
-=======
 if __name__ == "__main__":
     # Call the visualization functions
     visualize_scatterplot()
     visualize_bargraph()
     visualize_top_twitch_games()
     print("Data visualizations generated successfully.")
->>>>>>> 227240c859b79fae1f3e431336567386c127055d:final project/visuals.py
