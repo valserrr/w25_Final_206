@@ -3,8 +3,11 @@
 # The project involves scraping data from Roblox, storing it in a SQLite database, and performing some analysis.
 import sqlite3
 import requests
-import bs4 as bsoup  
-from robloxpy import Game, User  
+from bs4 import BeautifulSoup 
+from robloxpy.Game import External as GameAPI
+from robloxpy.User import External as UserAPI
+
+#from robloxpy import Game, User  
 
 def create_tables():
     """Create the database and tables if they don't exist."""
@@ -45,10 +48,17 @@ def create_tables():
 def scrape_game_ids(limit: int = 25) -> list[int]:
     """Scrape Roblox game IDs from the discover page."""
     url = 'https://www.roblox.com/discover'
-    response = requests.get(url)
+    try:
+
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching the page: {e}")
+        return []
     soup = BeautifulSoup(response.text, 'html.parser')
     game_links = soup.find_all('a', class_='game-card-link')
-    game_ids = set()
+    game_ids = scrape_game_ids(limit)
+    #print("Scarped Game IDs:", game_ids)
     for link in game_links:
         href = link.get('href')
         if href and '/games/' in href:
@@ -62,17 +72,18 @@ def scrape_game_ids(limit: int = 25) -> list[int]:
     return list(game_ids)
 
 def scrape_game_creator_info(game_id):
-    """Scrape game creator info from the Roblox API."""
+    """Scrape game creator info using robloxpy External API."""
     try:
-        game = Game.Game(game_id)
-        creator_username = game.Creator()
-        visits = game.Visits()
-        title = game.Title()
+        game = GameAPI.GetGameInfo(game_id)
+        title = game['Title']
+        creator_username = game['CreatorName']
+        visits = game['Visits']
 
-        creator = User.User(creator_username)
-        creator_id = creator.Id
-        followers = creator.FollowersCount()
-        account_age = creator.AccountAge()
+        user = UserAPI.GetUserInfo(creator_username)
+        creator_id = user['Id']
+        followers = user['Followers']
+        account_age = user['AccountAgeInDays']
+
         return {
             'game_id': game_id,
             'title': title,
@@ -167,6 +178,6 @@ def write_twitch_analysis_to_txt():
     except Exception as e:
         print(f"Unexpected error: {e}")
 
-    if __name__ == "__main__":
-        create_tables()
-        store_data(25)
+if __name__ == "__main__":
+    create_tables()
+    store_data(25)
