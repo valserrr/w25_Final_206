@@ -3,7 +3,7 @@ import sqlite3
 from sqlite3 import Error
 import requests
 from visuals import visualize_scatterplot
-from robloxpy import Game, User 
+import robloxpy
 
 # Twitch API credentials
 client_id = "09wmqv5mqgpcxec5wazvja5y89p1fs"

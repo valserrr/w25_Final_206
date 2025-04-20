@@ -3,11 +3,8 @@
 # The project involves scraping data from Roblox, storing it in a SQLite database, and performing some analysis.
 import sqlite3
 import requests
-from bs4 import BeautifulSoup 
-from robloxpy.Game import External as GameAPI
-from robloxpy.User import External as UserAPI
-
-#from robloxpy import Game, User  
+import bs4 as bsoup  
+from robloxpy import Game, User  
 
 def create_tables():
     """Create the database and tables if they don't exist."""
@@ -45,6 +42,7 @@ def create_tables():
     conn.commit()
     conn.close()
 
+
 def scrape_game_ids(limit: int = 25) -> list[int]:
     """Scrape Roblox game IDs from the discover page."""
     url = 'https://www.roblox.com/discover'
@@ -65,63 +63,73 @@ def scrape_game_ids(limit: int = 25) -> list[int]:
             try:
                 game_id = int(href.split('/games/')[1].split('/')[0])
                 game_ids.add(game_id)
-            except ValueError:
+            except (ValueError, IndexError):
                 continue
         if len(game_ids) >= limit:
             break
     return list(game_ids)
 
 def scrape_game_creator_info(game_id):
-    """Scrape game creator info using robloxpy External API."""
+    """Scrape game creator info from the Roblox API."""
     try:
-        game = GameAPI.GetGameInfo(game_id)
-        title = game['Title']
-        creator_username = game['CreatorName']
-        visits = game['Visits']
+        game = Game.Game(game_id)
+        creator_username = game.Creator()
+        visits = game.Visits()
+        title = game.Title()
 
-        user = UserAPI.GetUserInfo(creator_username)
-        creator_id = user['Id']
-        followers = user['Followers']
-        account_age = user['AccountAgeInDays']
-
+        creator = User.User(creator_username)
+        creator_id = creator.Id
+        followers = creator.FollowersCount()
+        account_age = creator.AccountAge()
         return {
             'game_id': game_id,
-            'title': title,
+            'title': universe_data.get("name"),
             'visits': visits,
             'creator_id': creator_id,
             'creator_username': creator_username,
-            'followers': followers,
-            'account_age': account_age,
+            'followers': None,
+            'account_age': None
         }
     except Exception as e:
-        print(f"Failed scraping game creator info for game {game_id}: {e}")
+        print(f"Error fetching data for game {game_id}: {e}")
         return None
 
-def store_data(limit=100):
-    """Store data in the database."""
-    create_tables()
+def store_data(limit=25):
+    """Store Roblox game and creator data in SQLite."""
     conn = sqlite3.connect('roblox.db')
     cur = conn.cursor()
     cur.execute("PRAGMA foreign_keys = ON")
+
     game_ids = scrape_game_ids(limit)
     inserted = 0
+
     for game_id in game_ids:
+        # Check if game is already in DB
+        cur.execute("SELECT 1 FROM Games WHERE game_id = ?", (game_id,))
+        if cur.fetchone():
+            continue
+
         data = scrape_game_creator_info(game_id)
         if data:
+            # Insert creator (if not already)
             cur.execute('''
                 INSERT OR IGNORE INTO Creators (creator_id, username, followers, account_age)
                 VALUES (?, ?, ?, ?)
             ''', (data['creator_id'], data['creator_username'], data['followers'], data['account_age']))
+
+            # Insert game
             cur.execute('''
                 INSERT OR IGNORE INTO Games (game_id, title, visits, creator_id)
                 VALUES (?, ?, ?, ?)
             ''', (data['game_id'], data['title'], data['visits'], data['creator_id']))
+
             inserted += 1
             if inserted >= limit:
                 break
-        conn.commit()
+
+    conn.commit()
     conn.close()
-    print(f"Inserted {inserted} rows into the database.")
+    print(f"Inserted {inserted} new games.")
 
 def fetch_top_games(token, client_id, limit=100):
     """Fetch the top games from the Twitch API."""
