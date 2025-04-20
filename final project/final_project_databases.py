@@ -85,8 +85,8 @@ def store_data(limit=25):
     conn.close()
     print(f"Inserted {inserted} rows into the database.")
 
-    def analyze_data_and_output():
-        conn = sqlite3.connect('roblox.db')
+def analyze_data_and_output():
+    conn = sqlite3.connect('roblox.db')
     cur = conn.cursor()
 
     # Fetch data
@@ -115,6 +115,7 @@ def store_data(limit=25):
 
     print("Analysis complete. Output written to roblox_analysis.txt.")
 
+    #TWITCH API
 def fetch_top_games(token, client_id, limit=100):
     """Fetch the top games from the Twitch API."""
     headers = {
@@ -173,3 +174,7 @@ def write_twitch_analysis_to_txt():
 if __name__ == "__main__":
     create_tables()
     store_data(25)
+
+    if __name__ == "__main__":
+        store_data(limit=25)  # Run this multiple times to reach 100 rows
+        analyze_data_and_output()
