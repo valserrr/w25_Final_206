@@ -6,6 +6,9 @@ import requests
 import bs4 as bsoup  
 import robloxpy
 from robloxpy.Game import Internal
+# Twitch API credentials
+client_id = "09wmqv5mqgpcxec5wazvja5y89p1fs"
+client_secret = "pwr99bomrk9shnk1ren9hdogickwam"
 
 def create_tables():
     conn = sqlite3.connect('roblox.db')
@@ -171,10 +174,42 @@ def write_twitch_analysis_to_txt():
     except Exception as e:
         print(f"Unexpected error: {e}")
 
-if __name__ == "__main__":
-    create_tables()
-    store_data(25)
+def fetch_twitch_token(client_id, client_secret):
+    """Fetch an app access token from the Twitch API."""
+    url = 'https://id.twitch.tv/oauth2/token'
+    data = {
+        'client_id': '09wmqv5mqgpcxec5wazvja5y89p1fs',
+        'client_secret': 'pwr99bomrk9shnk1ren9hdogickwam',
+    }
+    try:
+        response = requests.post(url, data=data)
+        response.raise_for_status()
+        token = response.json().get('access_token')
+        return token
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching Twitch token: {e}")
+        return None
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching Twitch token: {e}")
+    return None
 
-    if __name__ == "__main__":
-        store_data(limit=25)  # Run this multiple times to reach 100 rows
-        analyze_data_and_output()
+if __name__ == "__main__":
+    # Step 1: Create the database tables
+    create_tables()
+
+    # Step 2: Scrape and store Roblox data
+    store_data(limit=25)
+
+    # Step 3: Analyze and output Roblox data
+    analyze_data_and_output()
+
+    # Step 4: Fetch Twitch API token (replace with your actual token retrieval logic)
+    token = fetch_twitch_token(client_id, client_secret)
+    if token:
+        # Step 5: Fetch and store Twitch data
+        store_twitch_games(token, client_id)
+
+        # Step 6: Write Twitch analysis to a text file
+        write_twitch_analysis_to_txt()
+    else:
+        print("Failed to retrieve Twitch API token. Skipping Twitch data processing.")
