@@ -4,35 +4,26 @@
 import sqlite3
 import requests
 import bs4 as bsoup  
-from robloxpy import Game, User  
+import robloxpy
+from robloxpy.Game import Internal
 
 def create_tables():
-    """Create the database and tables if they don't exist."""
     conn = sqlite3.connect('roblox.db')
-    c = conn.cursor()
-    # Enable foreign key constraints
-    c.execute("PRAGMA foreign_keys = ON")
-    # Create the Creators table
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS Creators (
-            creator_id INTEGER PRIMARY KEY,
-            username TEXT,
-            followers INTEGER,
-            account_age INTEGER
-        )
-    ''')
+    cur = conn.cursor()
+    cur.execute("PRAGMA foreign_keys = ON")
     # Create the Games table
-    c.execute('''
+    cur.execute('''
         CREATE TABLE IF NOT EXISTS Games (
             game_id INTEGER PRIMARY KEY,
+            universe_id INTEGER,
             title TEXT,
-            visits INTEGER,
-            creator_id INTEGER,
-            FOREIGN KEY (creator_id) REFERENCES Creators (creator_id)
+            visits INTEGER
         )
     ''')
+    conn.commit()
+    conn.close()
     # Create the TwitchGames table
-    c.execute('''
+    conn.execute('''
         CREATE TABLE IF NOT EXISTS TwitchGames (
             game_id INTEGER PRIMARY KEY,
             name TEXT,
@@ -41,95 +32,88 @@ def create_tables():
     ''')
     conn.commit()
     conn.close()
-
-
 def scrape_game_ids(limit: int = 25) -> list[int]:
-    """Scrape Roblox game IDs from the discover page."""
     url = 'https://www.roblox.com/discover'
-    try:
-
-        response = requests.get(url, timeout=10)
-        response.raise_for_status()
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching the page: {e}")
-        return []
-    soup = BeautifulSoup(response.text, 'html.parser')
+    response = requests.get(url)
+    soup = bsoup.BeautifulSoup(response.text, 'html.parser')
     game_links = soup.find_all('a', class_='game-card-link')
-    game_ids = scrape_game_ids(limit)
-    #print("Scarped Game IDs:", game_ids)
+    game_ids = set()
     for link in game_links:
         href = link.get('href')
-        if href and '/games/' in href:
+        if '/games/' in href:
             try:
                 game_id = int(href.split('/games/')[1].split('/')[0])
                 game_ids.add(game_id)
-            except (ValueError, IndexError):
+            except:
                 continue
         if len(game_ids) >= limit:
             break
     return list(game_ids)
 
-def scrape_game_creator_info(game_id):
-    """Scrape game creator info from the Roblox API."""
+def scrape_game_data(place_id):
     try:
-        game = Game.Game(game_id)
-        creator_username = game.Creator()
-        visits = game.Visits()
-        title = game.Title()
-
-        creator = User.User(creator_username)
-        creator_id = creator.Id
-        followers = creator.FollowersCount()
-        account_age = creator.AccountAge()
+        universe_id = robloxpy.Game.Internal.GetUniverseID(place_id)
+        visits = robloxpy.Game.Internal.GetGameVisits(place_id)
+        title = f"Game {place_id}"  # Placeholder, robloxpy internal doesn’t return title
         return {
-            'game_id': game_id,
-            'title': universe_data.get("name"),
-            'visits': visits,
-            'creator_id': creator_id,
-            'creator_username': creator_username,
-            'followers': None,
-            'account_age': None
+            'game_id': place_id,
+            'universe_id': universe_id,
+            'title': title,
+            'visits': visits
         }
     except Exception as e:
-        print(f"Error fetching data for game {game_id}: {e}")
+        print(f"Error with place_id {place_id}: {e}")
         return None
-
 def store_data(limit=25):
-    """Store Roblox game and creator data in SQLite."""
+    create_tables()
     conn = sqlite3.connect('roblox.db')
     cur = conn.cursor()
     cur.execute("PRAGMA foreign_keys = ON")
-
     game_ids = scrape_game_ids(limit)
     inserted = 0
-
-    for game_id in game_ids:
-        # Check if game is already in DB
-        cur.execute("SELECT 1 FROM Games WHERE game_id = ?", (game_id,))
-        if cur.fetchone():
-            continue
-
-        data = scrape_game_creator_info(game_id)
+    for place_id in game_ids:
+        data = scrape_game_data(place_id)
         if data:
-            # Insert creator (if not already)
             cur.execute('''
-                INSERT OR IGNORE INTO Creators (creator_id, username, followers, account_age)
+                INSERT OR IGNORE INTO Games (game_id, universe_id, title, visits)
                 VALUES (?, ?, ?, ?)
-            ''', (data['creator_id'], data['creator_username'], data['followers'], data['account_age']))
-
-            # Insert game
-            cur.execute('''
-                INSERT OR IGNORE INTO Games (game_id, title, visits, creator_id)
-                VALUES (?, ?, ?, ?)
-            ''', (data['game_id'], data['title'], data['visits'], data['creator_id']))
-
+            ''', (data['game_id'], data['universe_id'], data['title'], data['visits']))
             inserted += 1
             if inserted >= limit:
                 break
-
-    conn.commit()
+        conn.commit()
     conn.close()
-    print(f"Inserted {inserted} new games.")
+    print(f"Inserted {inserted} rows into the database.")
+
+    def analyze_data_and_output():
+        conn = sqlite3.connect('roblox.db')
+    cur = conn.cursor()
+
+    # Fetch data
+    cur.execute("SELECT game_id, title, visits FROM Games")
+    rows = cur.fetchall()
+    conn.close()
+
+    if not rows:
+        print("No data to analyze.")
+        return
+
+    total_visits = sum([row[2] for row in rows])
+    avg_visits = total_visits / len(rows)
+    most_visited = max(rows, key=lambda x: x[2])
+
+    # Write to text file
+    with open("roblox_analysis.txt", "w") as f:
+        f.write("ROBLOX GAME VISITS ANALYSIS\n")
+        f.write("===========================\n\n")
+        f.write(f"Total Games Analyzed: {len(rows)}\n")
+        f.write(f"Average Visits per Game: {avg_visits:.2f}\n\n")
+        f.write("Most Visited Game:\n")
+        f.write(f"Game ID: {most_visited[0]}\n")
+        f.write(f"Title: {most_visited[1]}\n")
+        f.write(f"Visits: {most_visited[2]}\n")
+
+    print("Analysis complete. Output written to roblox_analysis.txt.")
 
 def fetch_top_games(token, client_id, limit=100):
     """Fetch the top games from the Twitch API."""
