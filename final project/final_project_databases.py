@@ -9,6 +9,7 @@ from robloxpy.Game import Internal
 # Twitch API credentials
 client_id = "09wmqv5mqgpcxec5wazvja5y89p1fs"
 client_secret = "pwr99bomrk9shnk1ren9hdogickwam"
+grant_type = "Confidential"
 
 def create_tables():
     conn = sqlite3.connect('roblox.db')
@@ -28,7 +29,7 @@ def create_tables():
         data = {
             'client_id': client_id,
             'client_secret': client_secret,
-            'grant_type': 'client_credentials'  # Required parameter
+            'grant_type': 'Confidential'  # Required parameter
         }
         try:
             response = requests.post(url, data=data)
