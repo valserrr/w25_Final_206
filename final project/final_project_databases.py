@@ -6,39 +6,53 @@ def create_database():
     """
     Create the necessary tables in the database.
     """
+    # Connect to the database
     conn = sqlite3.connect('final_project_databases.db')
+    # Create a cursor object
     cur = conn.cursor()
+    # Create the CatFacts table
     cur.execute('''
         CREATE TABLE IF NOT EXISTS CatFacts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             fact TEXT UNIQUE
         )
     ''')
+    # Create the DogBreeds table
     cur.execute('''
         CREATE TABLE IF NOT EXISTS DogBreeds (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             breed TEXT UNIQUE
         )
     ''')
+    # Create the DogBreedDetails table
     cur.execute('''
         CREATE TABLE IF NOT EXISTS DogBreedDetails (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             breed_id INTEGER,
             detail TEXT,
             FOREIGN KEY (breed_id) REFERENCES DogBreeds (id)
-        )
+        )            
     ''')
+    # Commit the changes
     conn.commit()
+    # Close the connection
     conn.close()
 
 def fetch_cat_facts(limit=25):
+    # Define the URL for the API request
     url = f'https://meowfacts.herokuapp.com/?count={limit}'
+    # Make the API request
     response = requests.get(url)
+    # Check if the request was successful
     if response.status_code == 200:
+        # Parse the JSON data
         data = response.json()
+        # Extract the cat facts from the data
         facts = data.get('data', [])
     else:
+        # Print an error message if the request was not successful
         print(f"API error: {response.status_code}. Using mock data.")
+        # Use an empty list as the cat facts
         facts = []
 
     # Add mock data to fill the gap
@@ -58,10 +72,14 @@ def fetch_cat_facts(limit=25):
     # Combine API facts with mock data if needed
     facts.extend(mock_facts[:limit - len(facts)])
 
+    # Connect to the SQLite database
     conn = sqlite3.connect('final_project_databases.db')
+    # Create a cursor object
     cur = conn.cursor()
+    # Initialize counters for inserted and duplicate facts
     inserted_count = 0
     duplicate_count = 0
+    # Iterate over the cat facts
     for fact in facts:
         if isinstance(fact, dict):  # Handle mock data format
             fact = fact.get('fact')
@@ -79,126 +97,215 @@ def count_cat_facts():
     """
     Print the total number of cat facts in the database.
     """
+    # Connect to the database
     conn = sqlite3.connect('final_project_databases.db')
+    # Create a cursor object
     cur = conn.cursor()
+    # Execute a query to count the number of cat facts in the database
     cur.execute('SELECT COUNT(*) FROM CatFacts')
+    # Fetch the result of the query
     total_facts = cur.fetchone()[0]
+    # Close the connection to the database
     conn.close()
+    # Print the total number of cat facts in the database
     print(f"Total Cat Facts in the database: {total_facts}")
 
 def analyze_cat_facts():
     """
     Analyze the CatFacts table and write results to a text file.
     """
+    # Connect to the database
     conn = sqlite3.connect('final_project_databases.db')
+    # Create a cursor object
     cur = conn.cursor()
+    # Execute a query to count the number of rows in the CatFacts table
     cur.execute('SELECT COUNT(*) FROM CatFacts')
+    # Fetch the result of the query
     total_facts = cur.fetchone()[0]
+    # Close the connection
     conn.close()
 
     # Update analysis.txt with the total number of cat facts
     with open('analysis.txt', 'w') as f:
         f.write(f"Total Cat Facts: {total_facts}\n")
+    # Print a message to the console
     print("Cat facts analysis written to analysis.txt.")
 
 def fetch_dog_breeds():
     """
     Fetch all dog breeds from the Dog CEO API and store them in the database.
     """
+    # Step 1: Fetch all dog breeds from the Dog CEO API
     url = 'https://dog.ceo/api/breeds/list/all'
     response = requests.get(url)
+
+    # Step 2: Handle the response
     if response.status_code == 200:
+        # Parse the JSON response data
         data = response.json()
+
+        # Fetch the dictionary of dog breeds
         breeds_dict = data.get('message', {})
-        breeds = list(breeds_dict.keys())  # Fetch all breeds
+
+        # Fetch the list of dog breeds
+        breeds = list(breeds_dict.keys())
+
+        # Connect to the SQLite database
         conn = sqlite3.connect('final_project_databases.db')
+
+        # Create a cursor object
         cur = conn.cursor()
+
+        # Initialize the counter for the number of breeds inserted
         inserted_count = 0
+
+        # Iterate over each breed
         for breed in breeds:
+            # Try to insert the breed into the DogBreeds table
             try:
                 cur.execute('INSERT OR IGNORE INTO DogBreeds (breed) VALUES (?)', (breed,))
+
+                # If the breed was inserted, fetch the breed ID
                 breed_id = cur.lastrowid
+
+                # Insert a new row into the DogBreedDetails table
                 cur.execute('INSERT INTO DogBreedDetails (breed_id, detail) VALUES (?, ?)', (breed_id, f"Details about {breed}"))
+
+                # Increment the counter for the number of breeds inserted
                 inserted_count += 1
+            # If the breed already exists in the database, skip it
             except sqlite3.IntegrityError:
                 continue
+
+        # Commit the changes to the database
         conn.commit()
+
+        # Close the connection to the database
         conn.close()
+
+        # Print a message to the console indicating the number of breeds inserted
         print(f"Inserted {inserted_count} new dog breeds into the database.")
     else:
+        # Print an error message if the API request was not successful
         print(f"API error: {response.status_code}")
 
 def fetch_dog_breeds_with_mock_data():
     """
     Fetch dog breeds from the Dog CEO API and use mock data to fill the gap.
     """
+
+    # Make an API request to the Dog CEO API to fetch dog breeds
     url = 'https://dog.ceo/api/breeds/list/all'
     response = requests.get(url)
+
+    # Check if the API request was successful
     if response.status_code == 200:
+        # Parse the JSON data and extract the breeds
         data = response.json()
         breeds_dict = data.get('message', {})
         breeds = list(breeds_dict.keys())
     else:
+        # Print an error message if the API request was not successful
         print(f"API error: {response.status_code}. Using mock data.")
+        # Use mock data to fill the gap
         breeds = [
             "goldendoodle", "labradoodle", "puggle", "pomsky", "shepsky",
             "maltipoo", "schnoodle", "cockapoo", "yorkipoo", "chiweenie"
         ]
 
+    # Connect to the SQLite database
     conn = sqlite3.connect('final_project_databases.db')
+
+    # Create a cursor object
     cur = conn.cursor()
+
+    # Initialize the counter for the number of breeds inserted
     inserted_count = 0
+
+    # Iterate over each breed
     for breed in breeds:
+        # Try to insert the breed into the DogBreeds table
         try:
             cur.execute('INSERT OR IGNORE INTO DogBreeds (breed) VALUES (?)', (breed,))
+
+            # If the breed was inserted, fetch the breed ID
             breed_id = cur.lastrowid
+
+            # Insert a new row into the DogBreedDetails table
             cur.execute('INSERT INTO DogBreedDetails (breed_id, detail) VALUES (?, ?)', (breed_id, f"Details about {breed}"))
+
+            # Increment the counter for the number of breeds inserted
             inserted_count += 1
+        # If the breed already exists in the database, skip it
         except sqlite3.IntegrityError:
             continue
+
+    # Commit the changes to the database
     conn.commit()
+
+    # Close the connection to the database
     conn.close()
+
+    # Print a message to the console indicating the number of breeds inserted
     print(f"Inserted {inserted_count} new dog breeds into the database.")
 
 def analyze_dog_breeds():
     """
     Analyze the DogBreeds table and write results to a text file.
     """
+    # Connect to the database
     conn = sqlite3.connect('final_project_databases.db')
+    # Create a cursor object
     cur = conn.cursor()
+    # Execute a query to count the number of rows in the DogBreeds table
     cur.execute('SELECT COUNT(*) FROM DogBreeds')
+    # Fetch the result of the query
     total_breeds = cur.fetchone()[0]
+    # Close the connection
     conn.close()
 
+    # Open a file to write the results
     with open('dog_breeds_analysis.txt', 'w') as f:
+        # Write the title of the analysis
         f.write("Dog Breeds Analysis\n")
+        # Write a separator line
         f.write("===================\n")
+        # Write the total number of dog breeds
         f.write(f"Total Dog Breeds: {total_breeds}\n")
+    # Print a message to indicate that the analysis has been written to the file
     print("Dog breeds analysis written to dog_breeds_analysis.txt.")
 
 def analyze_dog_breed_details():
     """
     Analyze the DogBreedDetails table and write results to a text file.
     """
+    # Connect to the database
     conn = sqlite3.connect('final_project_databases.db')
+    # Create a cursor object
     cur = conn.cursor()
+    # Execute a SQL query to join the DogBreeds and DogBreedDetails tables and group by breed
     cur.execute('''
         SELECT DogBreeds.breed, COUNT(DogBreedDetails.id) AS detail_count
         FROM DogBreeds
         JOIN DogBreedDetails ON DogBreeds.id = DogBreedDetails.breed_id
         GROUP BY DogBreeds.breed
     ''')
+    # Fetch all the results
     data = cur.fetchall()
+    # Close the connection
     conn.close()
 
+    # Open a text file to write the results
     with open('dog_breed_details_analysis.txt', 'w') as f:
+        # Write the title of the file
         f.write("Dog Breed Details Analysis\n")
+        # Write a separator line
         f.write("==========================\n")
+        # Loop through the results and write each row to the file
         for row in data:
             f.write(f"Breed: {row[0]}, Details: {row[1]}\n")
+    # Print a message to indicate that the analysis has been written to the file
     print("Dog breed details analysis written to dog_breed_details_analysis.txt.")
-
-#EXTRA CREDIT API
 
 def main():
     create_database()  # Ensure all tables are created
@@ -255,6 +362,7 @@ def main():
     analyze_cat_facts()
     analyze_dog_breeds()
     analyze_dog_breed_details()
+    
 if __name__ == '__main__':
     main()
     count_cat_facts()
