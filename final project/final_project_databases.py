@@ -35,6 +35,44 @@ def create_tables():
     ''')
     conn.commit()
     conn.close()
+    def get_game_title(place_id):
+        """
+        Fetch the title of a game using the Roblox API.
+        :param place_id: The PlaceID of the game.
+        :return: The title of the game or a placeholder if the title cannot be fetched.
+        """
+        url = f"https://games.roblox.com/v1/games?placeId={place_id}"
+        response = requests.get(url)
+        if response.status_code == 200:
+            data = response.json()
+            return data.get('name', f"Game {place_id}")
+        else:
+            print(f"Failed to fetch title for PlaceID {place_id}: {response.status_code}")
+            return f"Game {place_id}"
+    
+    
+    def scrape_game_data(place_id):
+        """
+        Scrape game data for a given PlaceID using robloxpy internal functions.
+        :param place_id: The PlaceID of the game.
+        :return: A dictionary containing game data or None if an error occurs.
+        """
+        try:
+            # Use robloxpy internal functions to fetch data
+            universe_id = robloxpy.Game.Internal.GetUniverseID(place_id)
+            visits = robloxpy.Game.Internal.GetGameVisits(place_id)
+            title = get_game_title(place_id)  # Fetch the actual game title
+    
+            # Return the scraped data
+            return {
+                'game_id': place_id,
+                'universe_id': universe_id,
+                'title': title,
+                'visits': visits
+            }
+        except Exception as e:
+            print(f"Error scraping data for PlaceID {place_id}: {e}")
+            return None
 def scrape_game_ids(limit: int = 25) -> list[int]:
     url = 'https://www.roblox.com/discover'
     response = requests.get(url)
@@ -54,10 +92,18 @@ def scrape_game_ids(limit: int = 25) -> list[int]:
     return list(game_ids)
 
 def scrape_game_data(place_id):
+    """
+    Scrape game data for a given PlaceID using robloxpy internal functions.
+    :param place_id: The PlaceID of the game.
+    :return: A dictionary containing game data or None if an error occurs.
+    """
     try:
+        # Use robloxpy internal functions to fetch data
         universe_id = robloxpy.Game.Internal.GetUniverseID(place_id)
         visits = robloxpy.Game.Internal.GetGameVisits(place_id)
-        title = f"Game {place_id}"  # Placeholder, robloxpy internal doesn’t return title
+        title = f"Game {place_id}"  # Placeholder title (robloxpy does not provide titles)
+
+        # Return the scraped data
         return {
             'game_id': place_id,
             'universe_id': universe_id,
@@ -65,26 +111,42 @@ def scrape_game_data(place_id):
             'visits': visits
         }
     except Exception as e:
-        print(f"Error with place_id {place_id}: {e}")
+        print(f"Error scraping data for PlaceID {place_id}: {e}")
         return None
+
+
 def store_data(limit=25):
-    create_tables()
+    """
+    Scrape and store Roblox game data in the database.
+    :param limit: The maximum number of games to scrape and store.
+    """
+    create_tables()  # Ensure the database tables are created
     conn = sqlite3.connect('roblox.db')
     cur = conn.cursor()
     cur.execute("PRAGMA foreign_keys = ON")
+
+    # Scrape game IDs
     game_ids = scrape_game_ids(limit)
     inserted = 0
+
     for place_id in game_ids:
+        # Scrape data for each game
         data = scrape_game_data(place_id)
         if data:
+            # Insert data into the database
             cur.execute('''
                 INSERT OR IGNORE INTO Games (game_id, universe_id, title, visits)
                 VALUES (?, ?, ?, ?)
             ''', (data['game_id'], data['universe_id'], data['title'], data['visits']))
             inserted += 1
+
+            # Stop if the limit is reached
             if inserted >= limit:
                 break
+
+        # Commit changes after each insertion
         conn.commit()
+
     conn.close()
     print(f"Inserted {inserted} rows into the database.")
 
@@ -117,6 +179,7 @@ def analyze_data_and_output():
         f.write(f"Visits: {most_visited[2]}\n")
 
     print("Analysis complete. Output written to roblox_analysis.txt.")
+
 
     #TWITCH API
 def fetch_top_games(token, client_id, limit=100):
