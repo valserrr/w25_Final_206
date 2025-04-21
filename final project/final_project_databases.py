@@ -1,332 +1,111 @@
-# Final Project: Databases
-# This code is part of a final project for a course on databases.
-# The project involves scraping data from Roblox, storing it in a SQLite database, and performing some analysis.
-import sqlite3
 import requests
-import bs4 as bsoup  
-import robloxpy
-from robloxpy.Game import Internal
-# Twitch API credentials
-client_id = "09wmqv5mqgpcxec5wazvja5y89p1fs"
-client_secret = "pwr99bomrk9shnk1ren9hdogickwam"
-grant_type = "Confidential"
+import sqlite3
+import time
 
-def create_tables():
-    conn = sqlite3.connect('roblox.db')
+def create_database():
+    conn = sqlite3.connect('final_project_databases.db')
     cur = conn.cursor()
-    cur.execute("PRAGMA foreign_keys = ON")
-    # Create the Games table
     cur.execute('''
-        CREATE TABLE IF NOT EXISTS Games (
-            game_id INTEGER PRIMARY KEY,
-            universe_id INTEGER,
-            title TEXT,
-            visits INTEGER
-        )''')   
-    def fetch_twitch_token(client_id, client_secret):
-        """Fetch an app access token from the Twitch API."""
-        url = 'https://id.twitch.tv/oauth2/token'
-        data = {
-            'client_id': client_id,
-            'client_secret': client_secret,
-            'grant_type': 'Confidential'  # Required parameter
-        }
-        try:
-            response = requests.post(url, data=data)
-            response.raise_for_status()
-            token = response.json().get('access_token')
-            print(f"Successfully fetched Twitch token: {token}")
-            return token
-        except requests.exceptions.RequestException as e:
-            print(f"Error fetching Twitch token: {e}")
-            return None
-    
-    
-    def store_data(limit=25):
-        """
-        Scrape and store Roblox game data in the database.
-        :param limit: The maximum number of games to scrape and store.
-        """
-        create_tables()  # Ensure the database tables are created
-        conn = sqlite3.connect('roblox.db')
-        cur = conn.cursor()
-        cur.execute("PRAGMA foreign_keys = ON")
-    
-        # Scrape game IDs
-        game_ids = scrape_game_ids(limit)
-        print(f"Scraped game IDs: {game_ids}")  # Debugging
-    
-        inserted = 0
-    
-        for place_id in game_ids:
-            # Scrape data for each game
-            data = scrape_game_data(place_id)
-            print(f"Scraped data for PlaceID {place_id}: {data}")  # Debugging
-    
-            if data:
-                # Insert data into the database
-                cur.execute('''
-                    INSERT OR IGNORE INTO Games (game_id, universe_id, title, visits)
-                    VALUES (?, ?, ?, ?)
-                ''', (data['game_id'], data['universe_id'], data['title'], data['visits']))
-                print(f"Inserted data into Games table: {data}")  # Debugging
-                inserted += 1
-    
-                # Stop if the limit is reached
-                if inserted >= limit:
-                    break
-    
-            # Commit changes after each insertion
-            conn.commit()
-    
-        conn.close()
-        print(f"Inserted {inserted} rows into the database.")
-    # Create the TwitchGames table
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS TwitchGames (
-            game_id INTEGER PRIMARY KEY,
-            name TEXT,
-            box_art_url TEXT
+        CREATE TABLE IF NOT EXISTS CatFacts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            fact TEXT UNIQUE
         )
     ''')
-    def get_game_title(place_id):
-        """
-        Fetch the title of a game using the Roblox API.
-        :param place_id: The PlaceID of the game.
-        :return: The title of the game or a placeholder if the title cannot be fetched.
-        """
-        url = f"https://games.roblox.com/v1/games?placeId={place_id}"
-        response = requests.get(url)
-        if response.status_code == 200:
-            data = response.json()
-            return data.get('name', f"Game {place_id}")
-        else:
-            print(f"Failed to fetch title for PlaceID {place_id}: {response.status_code}")
-            return f"Game {place_id}"
-    
-    
-    def scrape_game_data(place_id):
-        """
-        Scrape game data for a given PlaceID using robloxpy internal functions.
-        :param place_id: The PlaceID of the game.
-        :return: A dictionary containing game data or None if an error occurs.
-        """
-        try:
-            # Use robloxpy internal functions to fetch data
-            universe_id = robloxpy.Game.Internal.GetUniverseID(place_id)
-            visits = robloxpy.Game.Internal.GetGameVisits(place_id)
-            title = get_game_title(place_id)  # Fetch the actual game title
-    
-            # Return the scraped data
-            return {
-                'game_id': place_id,
-                'universe_id': universe_id,
-                'title': title,
-                'visits': visits
-            }
-        except Exception as e:
-            print(f"Error scraping data for PlaceID {place_id}: {e}")
-            return None
-def scrape_game_ids(limit: int = 25) -> list[int]:
-    url = 'https://www.roblox.com/discover'
-    response = requests.get(url)
-    soup = bsoup.BeautifulSoup(response.text, 'html.parser')
-    game_links = soup.find_all('a', class_='game-card-link')
-    game_ids = set()
-    for link in game_links:
-        href = link.get('href')
-        if '/games/' in href:
-            try:
-                game_id = int(href.split('/games/')[1].split('/')[0])
-                game_ids.add(game_id)
-            except:
-                continue
-        if len(game_ids) >= limit:
-            break
-    return list(game_ids)
-
-def scrape_game_data(place_id):
-    """
-    Scrape game data for a given PlaceID using robloxpy internal functions.
-    :param place_id: The PlaceID of the game.
-    :return: A dictionary containing game data or None if an error occurs.
-    """
-    try:
-        # Use robloxpy internal functions to fetch data
-        universe_id = robloxpy.Game.Internal.GetUniverseID(place_id)
-        visits = robloxpy.Game.Internal.GetGameVisits(place_id)
-        title = f"Game {place_id}"  # Placeholder title (robloxpy does not provide titles)
-
-        # Return the scraped data
-        return {
-            'game_id': place_id,
-            'universe_id': universe_id,
-            'title': title,
-            'visits': visits
-        }
-    except Exception as e:
-        print(f"Error scraping data for PlaceID {place_id}: {e}")
-        return None
-
-
-def store_data(limit=25):
-    """
-    Scrape and store Roblox game data in the database.
-    :param limit: The maximum number of games to scrape and store.
-    """
-    create_tables()  # Ensure the database tables are created
-    conn = sqlite3.connect('roblox.db')
-    cur = conn.cursor()
-    cur.execute("PRAGMA foreign_keys = ON")
-
-    # Scrape game IDs
-    game_ids = scrape_game_ids(limit)
-    inserted = 0
-
-    for place_id in game_ids:
-        # Scrape data for each game
-        data = scrape_game_data(place_id)
-        if data:
-            # Insert data into the database
-            cur.execute('''
-                INSERT OR IGNORE INTO Games (game_id, universe_id, title, visits)
-                VALUES (?, ?, ?, ?)
-            ''', (data['game_id'], data['universe_id'], data['title'], data['visits']))
-            inserted += 1
-
-            # Stop if the limit is reached
-            if inserted >= limit:
-                break
-
-        # Commit changes after each insertion
-        conn.commit()
-
-    conn.close()
-    print(f"Inserted {inserted} rows into the database.")
-
-def analyze_data_and_output():
-    conn = sqlite3.connect('roblox.db')
-    cur = conn.cursor()
-
-    # Fetch data
-    cur.execute("SELECT game_id, title, visits FROM Games")
-    rows = cur.fetchall()
-    conn.close()
-
-    if not rows:
-        print("No data to analyze.")
-        return
-
-    total_visits = sum([row[2] for row in rows])
-    avg_visits = total_visits / len(rows)
-    most_visited = max(rows, key=lambda x: x[2])
-
-    # Write to text file
-    with open("roblox_analysis.txt", "w") as f:
-        f.write("ROBLOX GAME VISITS ANALYSIS\n")
-        f.write("===========================\n\n")
-        f.write(f"Total Games Analyzed: {len(rows)}\n")
-        f.write(f"Average Visits per Game: {avg_visits:.2f}\n\n")
-        f.write("Most Visited Game:\n")
-        f.write(f"Game ID: {most_visited[0]}\n")
-        f.write(f"Title: {most_visited[1]}\n")
-        f.write(f"Visits: {most_visited[2]}\n")
-
-    print("Analysis complete. Output written to roblox_analysis.txt.")
-
-
-    #TWITCH API
-def fetch_top_games(token, client_id, limit=100):
-    """Fetch the top games from the Twitch API."""
-    headers = {
-        'Client-ID': client_id,
-        'Authorization': f'Bearer {token}'
-    }
-    url = f'https://api.twitch.tv/helix/games/top?first={limit}'
-    try:
-        response = requests.get(url, headers=headers)
-        response.raise_for_status()
-        return response.json().get('data', [])
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching data from Twitch API: {e}")
-        return []
-
-def store_twitch_games(token, client_id):
-    """Store Twitch games data in the database."""
-    create_tables()  # Ensure the table exists
-    games = fetch_top_games(token, client_id)
-    conn = sqlite3.connect('roblox.db')
-    cur = conn.cursor()
-    cur.execute("PRAGMA foreign_keys = ON")
-    for game in games:
-        game_id = int(game['id'])
-        name = game['name']
-        box_art_url = game['box_art_url']
-        cur.execute('''
-            INSERT OR IGNORE INTO TwitchGames (game_id, name, box_art_url)
-            VALUES (?, ?, ?)
-        ''', (game_id, name, box_art_url))
+    cur.execute('''
+        CREATE TABLE IF NOT EXISTS DogBreeds (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            breed TEXT UNIQUE
+        )
+    ''')
     conn.commit()
     conn.close()
-    print("Stored Twitch games in the database.")
 
-def write_twitch_analysis_to_txt():
-    """Write the top 10 Twitch games to a text file."""
-    try:
-        conn = sqlite3.connect('roblox.db')
+def fetch_cat_facts():
+    url = 'https://catfact.ninja/facts?limit=25'
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        facts = data.get('data', [])
+        conn = sqlite3.connect('final_project_databases.db')
         cur = conn.cursor()
-        cur.execute('''
-            SELECT name FROM TwitchGames
-            LIMIT 10
-        ''')
-        top_games = cur.fetchall()
+        for item in facts:
+            fact = item.get('fact')
+            if fact:
+                try:
+                    cur.execute('INSERT INTO CatFacts (fact) VALUES (?)', (fact,))
+                except sqlite3.IntegrityError:
+                    continue
+        conn.commit()
         conn.close()
-        with open('twitch_top_games.txt', 'w') as f:
-            f.write("Top 10 Games:\n")
-            for name, in top_games:
-                f.write(f"{name}\n")
-        print("Wrote Twitch game analysis to twitch_top_games.txt")
-    except sqlite3.Error as e:
-        print(f"Database error: {e}")
-    except Exception as e:
-        print(f"Unexpected error: {e}")
 
-def fetch_twitch_token(client_id, client_secret):
-    """Fetch an app access token from the Twitch API."""
-    url = 'https://id.twitch.tv/oauth2/token'
-    data = {
-        'client_id': '09wmqv5mqgpcxec5wazvja5y89p1fs',
-        'client_secret': 'pwr99bomrk9shnk1ren9hdogickwam',
-    }
-    try:
-        response = requests.post(url, data=data)
-        response.raise_for_status()
-        token = response.json().get('access_token')
-        return token
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching Twitch token: {e}")
-        return None
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching Twitch token: {e}")
-    return None
+def fetch_dog_breeds():
+    url = 'https://dog.ceo/api/breeds/list/all'
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        breeds_dict = data.get('message', {})
+        breeds = list(breeds_dict.keys())
+        conn = sqlite3.connect('final_project_databases.db')
+        cur = conn.cursor()
+        for breed in breeds:
+            try:
+                cur.execute('INSERT INTO DogBreeds (breed) VALUES (?)', (breed,))
+            except sqlite3.IntegrityError:
+                continue
+        conn.commit()
+        conn.close()
 
-if __name__ == "__main__":
-    # Step 1: Create the database tables
-    create_tables()
+def main():
+    create_database()
+    for _ in range(4):  # To get at least 100 cat facts
+        fetch_cat_facts()
+        time.sleep(1)  # To avoid hitting the API rate limit
+    fetch_dog_breeds()
 
-    # Step 2: Scrape and store Roblox data
-    store_data(limit=25)
+#Extra Credit API: Bored API
+def fetch_bored_activities():
+    conn = sqlite3.connect('final_project_databases.db')
+    cur = conn.cursor()
 
-    # Step 3: Analyze and output Roblox data
-    analyze_data_and_output()
+    # Create table if it doesn't exist
+    cur.execute('''
+        CREATE TABLE IF NOT EXISTS BoredActivities (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            activity TEXT UNIQUE,
+            type TEXT,
+            participants INTEGER,
+            price REAL,
+            accessibility REAL
+        )
+    ''')
+    # Fetch up to 25 new activities
+    count = 0
+    while count < 25:
+        response = requests.get("https://www.boredapi.com/api/activity/")
+        if response.status_code == 200:
+            data = response.json()
+            try:
+                cur.execute('''
+                    INSERT OR IGNORE INTO BoredActivities (activity, type, participants, price, accessibility)
+                    VALUES (?, ?, ?, ?, ?)
+                ''', (
+                    data.get("activity"),
+                    data.get("type"),
+                    data.get("participants"),
+                    data.get("price"),
+                    data.get("accessibility")
+                ))
+                conn.commit()
+                count += 1
+                time.sleep(0.1)  # Be nice to the API
+            except Exception as e:
+                print("Error inserting:", e)
+        else:
+            print("API error:", response.status_code)
+            break
 
-    # Step 4: Fetch Twitch API token (replace with your actual token retrieval logic)
-    token = fetch_twitch_token(client_id, client_secret)
-    if token:
-        # Step 5: Fetch and store Twitch data
-        store_twitch_games(token, client_id)
+    conn.close()
+    fetch_bored_activities()
 
-        # Step 6: Write Twitch analysis to a text file
-        write_twitch_analysis_to_txt()
-    else:
-        print("Failed to retrieve Twitch API token. Skipping Twitch data processing.")
+if __name__ == '__main__':
+    main()
