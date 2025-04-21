@@ -21,8 +21,65 @@ def create_tables():
             universe_id INTEGER,
             title TEXT,
             visits INTEGER
-        )
-    ''')
+        )''')   
+    def fetch_twitch_token(client_id, client_secret):
+        """Fetch an app access token from the Twitch API."""
+        url = 'https://id.twitch.tv/oauth2/token'
+        data = {
+            'client_id': client_id,
+            'client_secret': client_secret,
+            'grant_type': 'client_credentials'  # Required parameter
+        }
+        try:
+            response = requests.post(url, data=data)
+            response.raise_for_status()
+            token = response.json().get('access_token')
+            print(f"Successfully fetched Twitch token: {token}")
+            return token
+        except requests.exceptions.RequestException as e:
+            print(f"Error fetching Twitch token: {e}")
+            return None
+    
+    
+    def store_data(limit=25):
+        """
+        Scrape and store Roblox game data in the database.
+        :param limit: The maximum number of games to scrape and store.
+        """
+        create_tables()  # Ensure the database tables are created
+        conn = sqlite3.connect('roblox.db')
+        cur = conn.cursor()
+        cur.execute("PRAGMA foreign_keys = ON")
+    
+        # Scrape game IDs
+        game_ids = scrape_game_ids(limit)
+        print(f"Scraped game IDs: {game_ids}")  # Debugging
+    
+        inserted = 0
+    
+        for place_id in game_ids:
+            # Scrape data for each game
+            data = scrape_game_data(place_id)
+            print(f"Scraped data for PlaceID {place_id}: {data}")  # Debugging
+    
+            if data:
+                # Insert data into the database
+                cur.execute('''
+                    INSERT OR IGNORE INTO Games (game_id, universe_id, title, visits)
+                    VALUES (?, ?, ?, ?)
+                ''', (data['game_id'], data['universe_id'], data['title'], data['visits']))
+                print(f"Inserted data into Games table: {data}")  # Debugging
+                inserted += 1
+    
+                # Stop if the limit is reached
+                if inserted >= limit:
+                    break
+    
+            # Commit changes after each insertion
+            conn.commit()
+    
+        conn.close()
+        print(f"Inserted {inserted} rows into the database.")
     # Create the TwitchGames table
     conn.execute('''
         CREATE TABLE IF NOT EXISTS TwitchGames (
