@@ -23,8 +23,6 @@ def create_tables():
             visits INTEGER
         )
     ''')
-    conn.commit()
-    conn.close()
     # Create the TwitchGames table
     conn.execute('''
         CREATE TABLE IF NOT EXISTS TwitchGames (
@@ -33,8 +31,6 @@ def create_tables():
             box_art_url TEXT
         )
     ''')
-    conn.commit()
-    conn.close()
     def get_game_title(place_id):
         """
         Fetch the title of a game using the Roblox API.
