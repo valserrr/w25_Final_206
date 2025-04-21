@@ -37,6 +37,7 @@ def visualize_dog_breed_counts():
     plt.savefig('dog_breed_distribution_bar.png')
     plt.close()  # Close the figure after saving
 
+#EXTRA CREDIT API VISUALIZATION
 def visualize_dog_fact_lengths():
     """
     Visualize the distribution of dog fact lengths.

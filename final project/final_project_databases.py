@@ -28,12 +28,6 @@ def create_database():
             FOREIGN KEY (breed_id) REFERENCES DogBreeds (id)
         )
     ''')
-    cur.execute('''
-        CREATE TABLE IF NOT EXISTS DogFacts (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            fact TEXT UNIQUE
-        )
-    ''')
     conn.commit()
     conn.close()
 
@@ -74,28 +68,6 @@ def fetch_dog_breeds(limit=25):
         conn.commit()
         conn.close()
 
-def fetch_dog_facts(limit=25):
-    """
-    Fetch dog facts from the Dog Facts API and store them in the database.
-    :param limit: The number of dog facts to fetch.
-    """
-    url = f'https://dog-facts-api.herokuapp.com/api/v1/resources/dogs?number={limit}'
-    response = requests.get(url)
-    if response.status_code == 200:
-        facts = response.json()
-        conn = sqlite3.connect('final_project_databases.db')
-        cur = conn.cursor()
-        for fact in facts:
-            try:
-                cur.execute('INSERT INTO DogFacts (fact) VALUES (?)', (fact,))
-            except sqlite3.IntegrityError:
-                continue
-        conn.commit()
-        conn.close()
-        print(f"Inserted {len(facts)} dog facts into the database.")
-    else:
-        print(f"API error: {response.status_code}")
-
 def analyze_dog_breeds():
     """
     Analyze the DogBreeds table and write results to a text file.
@@ -134,13 +106,14 @@ def analyze_dog_breed_details():
             f.write(f"Breed: {row[0]}, Details: {row[1]}\n")
     print("Dog breed details analysis written to dog_breed_details_analysis.txt.")
 
+#EXTRA CREDIT API
+
 def main():
     create_database()  # Ensure all tables are created
     for _ in range(4):  # To get at least 100 cat facts
         fetch_cat_facts()
         time.sleep(1)  # To avoid hitting the API rate limit
     fetch_dog_breeds()
-    fetch_dog_facts(limit=25)  # Fetch dog facts
     analyze_dog_breeds()
     analyze_dog_breed_details()
 
