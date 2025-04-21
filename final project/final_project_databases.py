@@ -125,7 +125,56 @@ def analyze_bored_activities():
             f.write("==========================\n")
             for row in data:
                 f.write(f"Type: {row[0]}, Count: {row[1]}\n")
-    print("Bored activities analysis written to bored_analysis.txt.")
+    
+    def fetch_bored_activities():
+        conn = sqlite3.connect('final_project_databases.db')
+        cur = conn.cursor()
+    
+        # Create table if it doesn't exist
+        cur.execute('''
+            CREATE TABLE IF NOT EXISTS BoredActivities (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                activity TEXT UNIQUE,
+                type TEXT,
+                participants INTEGER,
+                price REAL,
+                accessibility REAL
+            )
+        ''')
+        # Fetch up to 25 new activities
+        count = 0
+        retries = 3  # Number of retries for API errors
+        while count < 25:
+            try:
+                response = requests.get("https://www.boredapi.com/api/activity/")
+                if response.status_code == 200:
+                    data = response.json()
+                    cur.execute('''
+                        INSERT OR IGNORE INTO BoredActivities (activity, type, participants, price, accessibility)
+                        VALUES (?, ?, ?, ?, ?)
+                    ''', (
+                        data.get("activity"),
+                        data.get("type"),
+                        data.get("participants"),
+                        data.get("price"),
+                        data.get("accessibility")
+                    ))
+                    conn.commit()
+                    count += 1
+                    time.sleep(0.1)  # Be nice to the API
+                else:
+                    print(f"API error: {response.status_code}. Retrying...")
+                    retries -= 1
+                    if retries == 0:
+                        print("Max retries reached. Exiting.")
+                        break
+                    time.sleep(2)  # Wait before retrying
+            except Exception as e:
+                print("Error inserting:", e)
+                break
+    
+        conn.close()
+        print("Bored activities analysis written to bored_analysis.txt.")
 
 if __name__ == '__main__':
     main()
