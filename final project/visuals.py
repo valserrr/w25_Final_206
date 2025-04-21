@@ -35,33 +35,27 @@ def visualize_dog_breed_counts():
     plt.savefig('dog_breed_distribution.png')
     plt.close()  # Close the figure after saving
 
-def visualize_bored_activity_types():
-    conn = sqlite3.connect('final_project_databases.db')
-    cur = conn.cursor()
-
-    cur.execute('''
-        SELECT type, COUNT(*) as count
-        FROM BoredActivities
-        GROUP BY type
-    ''')
-    data = cur.fetchall()
-    conn.close()
-
-    types = [row[0] for row in data]
-    counts = [row[1] for row in data]
+def visualize_dog_fact_lengths():
+    """
+    Visualize the distribution of dog fact lengths.
+    """
+    with sqlite3.connect('final_project_databases.db') as conn:
+        cur = conn.cursor()
+        cur.execute('SELECT LENGTH(fact) FROM DogFacts')
+        fact_lengths = [row[0] for row in cur.fetchall()]
 
     plt.figure(figsize=(10, 6))
-    plt.bar(types, counts, color='skyblue', edgecolor='black')
-    plt.xlabel("Activity Type")
-    plt.ylabel("Number of Activities")
-    plt.title("Distribution of Activity Types (Bored API)")
-    plt.xticks(rotation=45)
+    plt.hist(fact_lengths, bins=10, color='lightblue', edgecolor='black')
+    plt.title('Distribution of Dog Fact Lengths')
+    plt.xlabel('Length of Fact')
+    plt.ylabel('Number of Facts')
+    plt.grid(axis='y', alpha=0.75)
     plt.tight_layout()
+    plt.savefig('dog_fact_lengths.png')
     plt.show()
-    plt.savefig('bored_activity_types.png')
     plt.close()  # Close the figure after saving
 
 if __name__ == '__main__':
     visualize_cat_facts_distribution()
     visualize_dog_breed_counts()
-visualize_bored_activity_types()
+    visualize_dog_fact_lengths()
