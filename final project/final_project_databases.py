@@ -55,6 +55,22 @@ def fetch_dog_breeds(limit=100):
         conn.commit()
         conn.close()
 
+    def analyze_dog_breeds():
+        """
+        Analyze the DogBreeds table and write results to a text file.
+        """
+        conn = sqlite3.connect('final_project_databases.db')
+        cur = conn.cursor()
+        cur.execute('SELECT COUNT(*) FROM DogBreeds')
+        total_breeds = cur.fetchone()[0]
+        conn.close()
+
+        with open('dog_breeds_analysis.txt', 'w') as f:
+            f.write("Dog Breeds Analysis\n")
+            f.write("===================\n")
+            f.write(f"Total Dog Breeds: {total_breeds}\n")
+        print("Dog breeds analysis written to dog_breeds_analysis.txt.")
+
 #Extra Credit API: DOG FACTS API
 def create_database():
     conn = sqlite3.connect('final_project_databases.db')
@@ -117,13 +133,14 @@ def analyze_dog_facts():
         f.write("===================\n")
         f.write(f"Total Dog Facts: {total_facts}\n")
     print("Dog facts analysis written to dog_facts_analysis.txt.")
-    
+
 def main():
     create_database()
     for _ in range(4):  # To get at least 100 cat facts
         fetch_cat_facts()
         time.sleep(1)  # To avoid hitting the API rate limit
     fetch_dog_breeds()
+
     fetch_dog_facts(limit=25)  # Fetch dog facts
     analyze_dog_facts()  # Analyze dog facts
 
