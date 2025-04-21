@@ -3,6 +3,9 @@ import sqlite3
 import time
 
 def create_database():
+    """
+    Create the necessary tables in the database.
+    """
     conn = sqlite3.connect('final_project_databases.db')
     cur = conn.cursor()
     cur.execute('''
@@ -15,6 +18,20 @@ def create_database():
         CREATE TABLE IF NOT EXISTS DogBreeds (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             breed TEXT UNIQUE
+        )
+    ''')
+    cur.execute('''
+        CREATE TABLE IF NOT EXISTS DogBreedDetails (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            breed_id INTEGER,
+            detail TEXT,
+            FOREIGN KEY (breed_id) REFERENCES DogBreeds (id)
+        )
+    ''')
+    cur.execute('''
+        CREATE TABLE IF NOT EXISTS DogFacts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            fact TEXT UNIQUE
         )
     ''')
     conn.commit()
@@ -38,63 +55,24 @@ def fetch_cat_facts(limit=100):
         conn.commit()
         conn.close()
 
-def fetch_dog_breeds(limit=100):
+def fetch_dog_breeds(limit=25):
     url = 'https://dog.ceo/api/breeds/list/all'
     response = requests.get(url)
     if response.status_code == 200:
         data = response.json()
         breeds_dict = data.get('message', {})
-        breeds = list(breeds_dict.keys())
+        breeds = list(breeds_dict.keys())[:limit]
         conn = sqlite3.connect('final_project_databases.db')
         cur = conn.cursor()
         for breed in breeds:
             try:
-                cur.execute('INSERT INTO DogBreeds (breed) VALUES (?)', (breed,))
+                cur.execute('INSERT OR IGNORE INTO DogBreeds (breed) VALUES (?)', (breed,))
+                breed_id = cur.lastrowid
+                cur.execute('INSERT INTO DogBreedDetails (breed_id, detail) VALUES (?, ?)', (breed_id, f"Details about {breed}"))
             except sqlite3.IntegrityError:
                 continue
         conn.commit()
         conn.close()
-
-    def analyze_dog_breeds():
-        """
-        Analyze the DogBreeds table and write results to a text file.
-        """
-        conn = sqlite3.connect('final_project_databases.db')
-        cur = conn.cursor()
-        cur.execute('SELECT COUNT(*) FROM DogBreeds')
-        total_breeds = cur.fetchone()[0]
-        conn.close()
-
-        with open('dog_breeds_analysis.txt', 'w') as f:
-            f.write("Dog Breeds Analysis\n")
-            f.write("===================\n")
-            f.write(f"Total Dog Breeds: {total_breeds}\n")
-        print("Dog breeds analysis written to dog_breeds_analysis.txt.")
-
-#Extra Credit API: DOG FACTS API
-def create_database():
-    conn = sqlite3.connect('final_project_databases.db')
-    cur = conn.cursor()
-    cur.execute('''
-        CREATE TABLE IF NOT EXISTS CatFacts (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            fact TEXT UNIQUE
-        )
-    ''')
-    cur.execute('''
-        CREATE TABLE IF NOT EXISTS DogBreeds (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            breed TEXT UNIQUE
-        )
-    ''')
-    cur.execute('''
-        CREATE TABLE IF NOT EXISTS DogFacts (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            fact TEXT UNIQUE
-        )
-    ''')  # New table for Dog Facts
-    conn.commit()
-    conn.close()
 
 def fetch_dog_facts(limit=25):
     """
@@ -118,31 +96,53 @@ def fetch_dog_facts(limit=25):
     else:
         print(f"API error: {response.status_code}")
 
-def analyze_dog_facts():
+def analyze_dog_breeds():
     """
-    Analyze the DogFacts table and write results to a text file.
+    Analyze the DogBreeds table and write results to a text file.
     """
     conn = sqlite3.connect('final_project_databases.db')
     cur = conn.cursor()
-    cur.execute('SELECT COUNT(*) FROM DogFacts')
-    total_facts = cur.fetchone()[0]
+    cur.execute('SELECT COUNT(*) FROM DogBreeds')
+    total_breeds = cur.fetchone()[0]
     conn.close()
 
-    with open('dog_facts_analysis.txt', 'w') as f:
-        f.write("Dog Facts Analysis\n")
+    with open('dog_breeds_analysis.txt', 'w') as f:
+        f.write("Dog Breeds Analysis\n")
         f.write("===================\n")
-        f.write(f"Total Dog Facts: {total_facts}\n")
-    print("Dog facts analysis written to dog_facts_analysis.txt.")
+        f.write(f"Total Dog Breeds: {total_breeds}\n")
+    print("Dog breeds analysis written to dog_breeds_analysis.txt.")
+
+def analyze_dog_breed_details():
+    """
+    Analyze the DogBreedDetails table and write results to a text file.
+    """
+    conn = sqlite3.connect('final_project_databases.db')
+    cur = conn.cursor()
+    cur.execute('''
+        SELECT DogBreeds.breed, COUNT(DogBreedDetails.id) AS detail_count
+        FROM DogBreeds
+        JOIN DogBreedDetails ON DogBreeds.id = DogBreedDetails.breed_id
+        GROUP BY DogBreeds.breed
+    ''')
+    data = cur.fetchall()
+    conn.close()
+
+    with open('dog_breed_details_analysis.txt', 'w') as f:
+        f.write("Dog Breed Details Analysis\n")
+        f.write("==========================\n")
+        for row in data:
+            f.write(f"Breed: {row[0]}, Details: {row[1]}\n")
+    print("Dog breed details analysis written to dog_breed_details_analysis.txt.")
 
 def main():
-    create_database()
+    create_database()  # Ensure all tables are created
     for _ in range(4):  # To get at least 100 cat facts
         fetch_cat_facts()
         time.sleep(1)  # To avoid hitting the API rate limit
     fetch_dog_breeds()
-
     fetch_dog_facts(limit=25)  # Fetch dog facts
-    analyze_dog_facts()  # Analyze dog facts
+    analyze_dog_breeds()
+    analyze_dog_breed_details()
 
 if __name__ == '__main__':
     main()

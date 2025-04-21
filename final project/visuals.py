@@ -18,7 +18,7 @@ def visualize_cat_facts_distribution():
     plt.close()  # Close the figure after saving
 
 def visualize_dog_breed_counts():
-    """Visualize the breed distribution using a pie chart."""
+    """Visualize the breed distribution using a bar chart."""
     with sqlite3.connect('final_project_databases.db') as conn:
         cur = conn.cursor()
         cur.execute('SELECT breed, COUNT(*) FROM DogBreeds GROUP BY breed')
@@ -27,12 +27,14 @@ def visualize_dog_breed_counts():
     breeds = [row[0] for row in breed_data]
     counts = [row[1] for row in breed_data]
     
-    plt.figure(figsize=(10, 10))
-    plt.pie(counts, labels=breeds, autopct='%1.1f%%', startangle=140)
+    plt.figure(figsize=(12, 6))
+    plt.bar(breeds, counts, color='coral')
     plt.title('Distribution of Dog Breeds')
-    plt.axis('equal')  
+    plt.xlabel('Breed')
+    plt.ylabel('Count')
+    plt.xticks(rotation=45, ha='right')
     plt.tight_layout()
-    plt.savefig('dog_breed_distribution.png')
+    plt.savefig('dog_breed_distribution_bar.png')
     plt.close()  # Close the figure after saving
 
 def visualize_dog_fact_lengths():
