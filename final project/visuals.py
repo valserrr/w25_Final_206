@@ -8,6 +8,10 @@ def visualize_cat_facts_distribution():
         cur.execute('SELECT LENGTH(fact) FROM CatFacts')
         fact_lengths = [row[0] for row in cur.fetchall()]
     
+    if not fact_lengths:
+        print("No data available in the CatFacts table for visualization.")
+        return
+
     plt.figure(figsize=(10, 6))
     plt.hist(fact_lengths, bins=10, color='skyblue', edgecolor='black')
     plt.title('Distribution of Cat Fact Lengths')
@@ -16,6 +20,7 @@ def visualize_cat_facts_distribution():
     plt.grid(axis='y', alpha=0.75)
     plt.savefig('cat_fact_lengths.png')
     plt.close()  # Close the figure after saving
+    print("Cat fact lengths visualization saved as 'cat_fact_lengths.png'.")
 
 def visualize_dog_breed_counts():
     """Visualize the breed distribution using a pie chart."""
