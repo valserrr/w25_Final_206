@@ -61,6 +61,8 @@ def main():
         fetch_cat_facts()
         time.sleep(1)  # To avoid hitting the API rate limit
     fetch_dog_breeds()
+    fetch_bored_activities()
+    analyze_bored_activities()
 
 #Extra Credit API: Bored API
 def fetch_bored_activities():
@@ -105,6 +107,25 @@ def fetch_bored_activities():
             break
 
     conn.close()
+
+def analyze_bored_activities():
+    """Analyze the BoredActivities table and write results to a text file."""
+    conn = sqlite3.connect('final_project_databases.db')
+    cur = conn.cursor()
+    cur.execute('''
+            SELECT type, COUNT(*) as count
+            FROM BoredActivities
+            GROUP BY type
+        ''')
+    data = cur.fetchall()
+    conn.close()
+    
+    with open('bored_analysis.txt', 'w') as f:
+            f.write("Bored Activities Analysis\n")
+            f.write("==========================\n")
+            for row in data:
+                f.write(f"Type: {row[0]}, Count: {row[1]}\n")
+    print("Bored activities analysis written to bored_analysis.txt.")
 
 if __name__ == '__main__':
     main()
