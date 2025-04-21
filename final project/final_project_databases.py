@@ -20,8 +20,8 @@ def create_database():
     conn.commit()
     conn.close()
 
-def fetch_cat_facts():
-    url = 'https://catfact.ninja/facts?limit=25'
+def fetch_cat_facts(limit=100):
+    url = 'https://catfact.ninja/facts'
     response = requests.get(url)
     if response.status_code == 200:
         data = response.json()
@@ -38,7 +38,7 @@ def fetch_cat_facts():
         conn.commit()
         conn.close()
 
-def fetch_dog_breeds():
+def fetch_dog_breeds(limit=100):
     url = 'https://dog.ceo/api/breeds/list/all'
     response = requests.get(url)
     if response.status_code == 200:
@@ -105,7 +105,6 @@ def fetch_bored_activities():
             break
 
     conn.close()
-    fetch_bored_activities()
 
 if __name__ == '__main__':
     main()
