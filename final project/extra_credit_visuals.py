@@ -45,5 +45,49 @@ def visualize_pony_kinds():
     plt.close()
     print("Pony kinds distribution visualization saved as 'pony_kinds_distribution.png'.")
 
+def visualize_pony_residences():
+    """
+    Visualize the distribution of pony residences with all bars in different shades of green.
+    """
+    with sqlite3.connect('final_project_databases.db') as conn:
+        cur = conn.cursor()
+        # Fetch all residences from the PonyCharacters table
+        cur.execute('SELECT residence FROM PonyCharacters')
+        data = cur.fetchall()
+
+    if not data:
+        print("No data available in the PonyCharacters table for visualization.")
+        return
+
+    # Flatten the list of residences and split by newlines
+    all_residences = []
+    for row in data:
+        if row[0]:  # Check if the residence is not None
+            residences = row[0].split('\n')  # Split the string into individual residences
+            all_residences.extend(residences)
+
+    # Count the occurrences of each residence
+    residence_counts = Counter(all_residences)
+
+    # Prepare data for visualization
+    residences = list(residence_counts.keys())
+    counts = list(residence_counts.values())
+
+    # Generate different shades of green
+    green_shades = plt.cm.Greens(np.linspace(0.4, 0.9, len(residences)))
+
+    # Create the bar chart
+    plt.figure(figsize=(10, 6))
+    plt.bar(residences, counts, color=green_shades)
+    plt.title('Distribution of Pony Residences')
+    plt.xlabel('Residence')
+    plt.ylabel('Number of Ponies')
+    plt.xticks(rotation=45, ha='right')
+    plt.tight_layout()
+    plt.savefig('pony_residences_distribution.png')
+    plt.close()
+    print("Pony residences distribution visualization saved as 'pony_residences_distribution.png'.")
+
 if __name__ == '__main__':
     visualize_pony_kinds()
+    visualize_pony_residences()
