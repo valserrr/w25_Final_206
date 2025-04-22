@@ -51,8 +51,8 @@ def visualize_pony_residences():
     """
     with sqlite3.connect('final_project_databases.db') as conn:
         cur = conn.cursor()
-        # Fetch all residences from the PonyCharacters table
-        cur.execute('SELECT residence FROM PonyCharacters')
+        # Fetch all residences from the PonyCharacters table, limited to 25 ponies
+        cur.execute('SELECT residence FROM PonyCharacters LIMIT 25')
         data = cur.fetchall()
 
     if not data:

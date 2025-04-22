@@ -56,3 +56,174 @@ Name: Sweetie Belle, Alias: None, Residence: None, Occupation: Cutie Mark Crusad
 School of Friendship teacher (S9E26)
 School of Friendship tutor (S8E12-S9E26)
 Student (formerly), Kind: Unicorn
+Name: Babs Seed, Alias: Sweetie Babs, Residence: Manehattan
+Farrier Hill, Hooflyn (in comics), Occupation: Student
+Cutie Mark Crusader (former head of Manehattan Branch), Kind: Human, Earth
+Name: Gabby, Alias: Gabriella, Residence: Griffonstone, Occupation: Mail courier
+Cutie Mark Crusader, Kind: Griffon
+Name: Princess Celestia, Alias: Queen Celestia, Residence: Silver Shoals (S9E26 onward)
+Canterlot (formerly)
+Castle of the Two Sisters (formerly), Occupation: Co-ruler of Equestria (formerly)
+Twilight Sparkle's teacher (season 1 to 3)
+Sunset Shimmer's teacher (formerly), Kind: Alicorn
+Name: Princess Luna, Alias: Nightmare Moon, Residence: Silver Shoals (S9E26 onward)
+Canterlot (formerly)
+Moon (banished until S1E1)
+Castle of the Two Sisters (formerly), Occupation: Co-ruler of Equestria (formerly), Kind: Alicorn
+Name: Prince Blueblood, Alias: Vladímir, Residence: Canterlot, Occupation: None, Kind: Unicorn
+Name: Shining Armor, Alias: Prince Shining Armor, Residence: Crystal Empire
+Canterlot (formerly), Occupation: Co-ruler of the Crystal Empire
+Captain of the Canterlot Royal Guard (formerly)
+Student at Canterlot Academy (formerly), Kind: Unicorn, Human
+Name: Princess Cadance, Alias: Princess Mi Amore Cadenza, Residence: Crystal Empire
+Canterlot (formerly), Occupation: Co-ruler of the Crystal Empire
+Foal-sitter of Twilight Sparkle (formerly)
+Student at Canterlot Academy (formerly), Kind: Alicorn, Human, Pegasus
+Name: Prince Rutherford, Alias: None, Residence: None, Occupation: Prince of Yakyakistan, Kind: Yak
+Name: Flurry Heart, Alias: Baby Flurry Heart, Residence: Crystal Empire, Occupation: None, Kind: Alicorn
+Name: Ember, Alias: Princess Ember, Residence: Dragon Lands, Occupation: Dragon Lord, Kind: Dragon
+Name: Thorax, Alias: King Thorax, Residence: Changeling Kingdom
+Crystal Empire (formerly), Occupation: Leader of the changelings (S6E26 onward), Kind: Changeling
+Name: Princess Skystar, Alias: None, Residence: Seaquestria
+Hippogriffia (formerly), Occupation: Princess of Seaquestria, Kind: Hippogriff, Seapony
+Name: Queen Novo, Alias: None, Residence: Seaquestria
+Hippogriffia, Occupation: Ruler of Seaquestria
+Ruler of Hippogriffia, Kind: Hippogriff, Seapony
+Name: Princess Amore, Alias: None, Residence: Crystal Empire (formerly), Occupation: Ruler of the Crystal Empire (formerly), Kind: Unicorn, Crystal
+Name: Granny Smith, Alias: None, Residence: Sweet Apple Acres, Occupation: None, Kind: Earth
+Name: Big McIntosh, Alias: Big Mac, Residence: Sweet Apple Acres, Occupation: Farmer
+Pony Tones bass singer, Kind: Earth
+Name: Braeburn, Alias: None, Residence: Appleloosa, Occupation: Farmer, Kind: Earth
+Name: Aunt Orange, Alias: None, Residence: Manehattan, Occupation: None, Kind: Earth
+Name: Uncle Orange, Alias: Mosely Orange, Residence: Manehattan, Occupation: None, Kind: Earth
+Name: Hayseed Turnip Truck, Alias: None, Residence: None, Occupation: "many odd jobs", Kind: Earth
+Name: Apple Strudel, Alias: None, Residence: None, Occupation: None, Kind: Earth
+Name: Auntie Applesauce, Alias: Aunt Applesauce, Residence: None, Occupation: None, Kind: Earth
+Name: Apple Rose, Alias: None, Residence: Silver Stable Retirement Community, Occupation: None, Kind: Earth
+Name: Goldie Delicious, Alias: None, Residence: A cabin not far from Ponyville
+Sweet Apple Acres (formerly), Occupation: Historian, Kind: Human, Earth
+Name: Bright Mac, Alias: Bright Macintosh, Residence: Sweet Apple Acres, Occupation: None, Kind: Earth
+Name: Pear Butter, Alias: Buttercup, Residence: Sweet Apple Acres, Occupation: None, Kind: Earth
+Name: Limestone Pie, Alias: None, Residence: Pie Family Rock Farm, Rockville, Western Equestria, Occupation: None, Kind: Earth
+Name: Marble Pie, Alias: None, Residence: Pie Family Rock Farm, Rockville, Western Equestria, Occupation: None, Kind: Earth
+Name: Igneous Rock Pie, Alias: Igneous Rock, Residence: Pie Family Rock Farm, Rockville, Western Equestria, Occupation: Rock farmer, Kind: Earth
+Name: Cloudy Quartz, Alias: None, Residence: Pie Family Rock Farm, Rockville, Western Equestria, Occupation: Rock farmer, Kind: Earth
+Name: Maud Pie, Alias: Maudileena Daisy Pie, Residence: Crystal cave near Ponyville (S7E4 onward)
+Pie Family Rock Farm, Rockville, Western Equestria (until S7E4), Occupation: Geologist
+Stand-up comedian, Kind: Earth
+Name: Mr. Shy, Alias: None, Residence: Cloudsdale, Occupation: Weather factory worker (formerly), Kind: Pegasus
+Name: Mrs. Shy, Alias: None, Residence: Cloudsdale, Occupation: None, Kind: Pegasus
+Name: Zephyr Breeze, Alias: None, Residence: Cloudsdale
+Ponyville (briefly in S6E11), Occupation: Mane therapist
+Salonist at The Mane Event
+Royal guard (briefly), Kind: Pegasus
+Name: Mr. Carrot Cake, Alias: None, Residence: Ponyville, Occupation: Confectioner & Baker, Kind: Human, Earth
+Name: Mrs. Cup Cake, Alias: Chiffon Swirl, Residence: Ponyville, Occupation: Confectioner & Baker, Kind: Human, Earth
+Name: Pound Cake, Alias: None, Residence: Sugarcube Corner, Ponyville, Occupation: None, Kind: Pegasus
+Name: Pumpkin Cake, Alias: None, Residence: Sugarcube Corner, Ponyville, Occupation: None, Kind: Unicorn
+Name: Gallus, Alias: None, Residence: Canterlot (S9E26)
+School of Friendship, Ponyville (seasons 8-9)
+Griffonstone (formerly), Occupation: Captain of the royal guard (S9E26)
+Student at the School of Friendship (seasons 8-9), Kind: Griffon
+Name: Silverstream, Alias: Silver Stream, Residence: School of Friendship, Ponyville (as of S8E2)
+Seaquestria (formerly), Occupation: Student at the School of Friendship (seasons 8-9), Kind: Hippogriff, Seapony
+Name: Smolder, Alias: None, Residence: School of Friendship, Ponyville (seasons 8-9)
+Dragon Lands (formerly), Occupation: Student at the School of Friendship (seasons 8-9), Kind: Dragon
+Name: Yona, Alias: Yona Yak, Residence: Ponyville (S9E26)
+School of Friendship, Ponyville (seasons 8-9)
+Yakyakistan (formerly), Occupation: Carousel Boutique employee (S9E26)
+Student at the School of Friendship (seasons 8-9), Kind: Yak
+Name: Sandbar, Alias: None, Residence: Ponyville, Occupation: Student at the School of Friendship (seasons 8-9), Kind: Earth
+Name: Ocellus, Alias: None, Residence: School of Friendship, Ponyville (seasons 8-9)
+Changeling Kingdom (formerly), Occupation: Student at the School of Friendship (seasons 8-9), Kind: Changeling
+Name: Diamond Tiara, Alias: Diamond Dazzle Tiara, Residence: Ponyville, Occupation: Student, Kind: Earth
+Name: Filthy Rich, Alias: Berry Rich, Residence: Ponyville, Occupation: Businesspony
+Mayor of Ponyville (My Little Pony: Friendship is Magic Issue #46-47), Kind: Human, Earth
+Name: Spoiled Rich, Alias: Spoiled Milk, Residence: Ponyville, Occupation: Head of the school board, Kind: Earth
+Name: Silver Spoon, Alias: None, Residence: With her family in Ponyville, Occupation: Student, Kind: Earth
+Name: Twist, Alias: Twist-a-loo, Residence: Ponyville, Occupation: None, Kind: Earth
+Name: Snips, Alias: Snipsy Snap, Residence: Ponyville, Occupation: Student, Kind: Unicorn
+Name: Snails, Alias: Snailsquirm, Residence: Ponyville, Occupation: Student at Ponyville Schoolhouse, Kind: Unicorn
+Name: Sunny Daze, Alias: None, Residence: None, Occupation: None, Kind: Earth, Pegasus
+Name: Peachy Pie, Alias: None, Residence: None, Occupation: None, Kind: Earth
+Name: Pipsqueak, Alias: Pip Squeak, Residence: Ponyville
+Trottingham (formerly), Occupation: Ponyville Schoolhouse class president, Kind: Earth
+Name: Featherweight, Alias: None, Residence: Ponyville, Occupation: Student
+Editor-in-chief of the Foal Free Press, Kind: Pegasus
+Name: Rumble, Alias: None, Residence: Ponyville, Occupation: None, Kind: Pegasus
+Name: Filly Guides, Alias: Filly Scouts, Residence: None, Occupation: Scouting youth organization, Kind: 
+Name: Zipporwhill, Alias: None, Residence: None, Occupation: None, Kind: Earth, Pegasus
+Name: Tender Taps, Alias: None, Residence: None, Occupation: Tap dancer, Kind: Earth
+Name: Toola Roola, Alias: None, Residence: Ponyville, Occupation: None, Kind: Earth
+Name: Coconut Cream, Alias: None, Residence: Ponyville, Occupation: None, Kind: Earth
+Name: Clear Sky, Alias: None, Residence: None, Occupation: None, Kind: Unicorn
+Name: Wind Sprint, Alias: None, Residence: None, Occupation: None, Kind: Pegasus
+Name: Queen Chrysalis, Alias: None, Residence: Grogar's lair (S9E1 to S9E24)
+Changeling Kingdom (S2E26 to S6E26), Occupation: Queen of the changelings (formerly), Kind: Human, Changeling
+Name: King Sombra, Alias: None, Residence: Crystal Empire (formerly)
+Canterlot (alternate universe), Occupation: Ruler of the Crystal Empire (formerly), Kind: Unicorn, Umbrum
+Name: Lord Tirek, Alias: None, Residence: Grogar's lair (S9E1 to S9E24)
+Tartarus (S4E26 to S9E1)
+"A distant land" (formerly), Occupation: None, Kind: Centaur
+Name: Adagio Dazzle, Alias: None, Residence: Human world
+Equestria (formerly), Occupation: Leader of the Dazzlings
+Student at Canterlot High School (temporarily), Kind: Unicorn, Human, Earth, Siren
+Name: Aria Blaze, Alias: None, Residence: Human world
+Equestria (formerly), Occupation: Member of the Dazzlings
+Student at Canterlot High School (temporarily), Kind: Human, Siren
+Name: Sonata Dusk, Alias: None, Residence: Human world
+Equestria (formerly), Occupation: Member of the Dazzlings
+Student at Canterlot High School (temporarily), Kind: Human, Earth, Siren
+Name: The Storm King, Alias: None, Residence: "The lands beyond Equestria", Occupation: Conqueror, Kind: 
+Name: Cozy Glow, Alias: None, Residence: Grogar's lair (S9E1-S9E24)
+Tartarus (S8E26-S9E1)
+Ponyville (S8E12-S8E26), Occupation: Student at the School of Friendship (formerly), Kind: Alicorn, Pegasus
+Name: Grogar, Alias: None, Residence: Skull-shaped lair, Occupation: Emperor of Ancient Equestria (formerly), Kind: Ram
+Name: Gilda, Alias: Gilda the Griffon, Residence: Griffonstone
+Cloudsdale (formerly), Occupation: Scone baker
+Griffonstone Boffyball team assistant coach (as of My Little Pony: Friends Forever Issue #24), Kind: Griffon
+Name: Trixie, Alias: Trixie Lulamoon, Residence: None, Occupation: Traveling magician
+School of Friendship guidance counselor (S9E20 onward)
+Rock farm worker (formerly)
+Queen of Dimondia (formerly in Friends Forever Issue #6)
+Student at Celestia's School for Gifted Unicorns (formerly), Kind: Unicorn
+Name: Discord, Alias: None, Residence: A house in Chaosville
+Canterlot sculpture garden (while turned to stone until S2E1), Occupation: Honorary Cutie Mark Crusader (My Little Pony: Friends Forever Issue #2 onward)
+Vice headmare of the School of Friendship (briefly)
+Ruler of Equestria (formerly), Kind: Draconequus
+Name: Ahuizotl, Alias: None, Residence: Tenochtitlan Basin, Occupation: Guardian of Tenochtitlan Basin
+Author, Kind: Ahuizotl
+Name: Garble, Alias: None, Residence: Dragon Lands, Occupation: None, Kind: Dragon
+Name: Sunset Shimmer, Alias: None, Residence: Canterlot, human world
+Canterlot, Equestria (in The Fall of Sunset Shimmer), Occupation: Student at Canterlot High School
+Rainbooms' rhythm guitarist
+Sushi chef
+Graffiti artist
+Twilight Sparkle's student (prior to Forgotten Friendship)​​
+Princess Celestia's student (in The Fall of Sunset Shimmer), Kind: Unicorn, Human
+Name: Dr. Caballeron, Alias: None, Residence: None, Occupation: Archaeologist and trader
+History professor
+Author, Kind: Earth
+Name: Dr. Caballeron's henchponies, Alias: None, Residence: None, Occupation: None, Kind: Earth, Pegasus
+Name: Starlight Glimmer, Alias: Starlight Shimmer, Residence: Castle of Friendship, Ponyville (S6E1 onward)
+Our Town (up until S5E2)
+Sire's Hollow (flashback in S5E26 and S6E1), Occupation: Principal of the School of Friendship (S9E20 onward)
+School of Friendship guidance counselor (S8E1-S9E20)
+Twilight Sparkle's student (S5E26-S7E1)
+Leader of Our Town (up until S5E2)
+Twilight Sparkle's assistant (according to Signature My Little Pony Special magazine issue 1's Equestria News), Kind: Unicorn, Human
+Name: Juniper Montage, Alias: None, Residence: Human world, Occupation: Theater usher
+Gofer (formerly), Kind: Human, Earth
+Name: Stygian, Alias: Pony of Shadows, Residence: Hollow Shades, Occupation: Scholar
+Strategist
+Author, Kind: Unicorn, Umbrum
+Name: Tempest Shadow, Alias: Fizzlepop Berrytwist, Residence: Unnamed town (formerly), Occupation: The Storm King's lieutenant (formerly)
+Student at Ponyville Schoolhouse (formerly), Kind: Unicorn, Earth
+Name: Grubber, Alias: None, Residence: None, Occupation: Henchman to the Storm King (formerly), Kind: Hedgehog
+Name: Wallflower Blush, Alias: None, Residence: None, Occupation: Student at Canterlot High School, Kind: Human, Earth
+Name: Chancellor Neighsay, Alias: None, Residence: None, Occupation: Head of the Equestria Education Association, Kind: Unicorn
+Name: Vignette Valencia, Alias: None, Residence: None, Occupation: Public relations representative, social media celebrity, designer, Kind: Human
+Name: Kiwi Lollipop, Alias: K-Lo, Residence: None, Occupation: Singer/guitarist
+Member of PostCrush, Kind: Human
+Name: Supernova Zap, Alias: Su-Z, Residence: None, Occupation: Singer/drummer
+Member of PostCrush, Kind: Human
