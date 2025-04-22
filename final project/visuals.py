@@ -39,7 +39,7 @@ def visualize_cat_facts_distribution():
     print("Cat fact lengths visualization saved as 'cat_fact_lengths.png'.")
 
 def visualize_dog_breed_counts():
-    """Visualize the distribution of dog breeds using a pie chart."""
+    """Visualize the distribution of dog breeds using a pie chart, limited to 25 breeds."""
     
     # Open a connection to the SQLite database
     with sqlite3.connect('final_project_databases.db') as conn:
@@ -47,8 +47,8 @@ def visualize_dog_breed_counts():
         cur = conn.cursor()
         
         # Execute a SQL query to select the breed and count the number of times 
-        # each breed appears in the DogBreeds table
-        cur.execute('SELECT breed, COUNT(*) FROM DogBreeds GROUP BY breed')
+        # each breed appears in the DogBreeds table, limited to 25
+        cur.execute('SELECT breed, COUNT(*) FROM DogBreeds GROUP BY breed LIMIT 25')
         
         # Fetch all results from the query and store them in a list
         breed_data = cur.fetchall()
@@ -68,7 +68,7 @@ def visualize_dog_breed_counts():
             colors=plt.cm.Paired.colors)  # Set the colors of the slices
     
     # Set the title of the plot
-    plt.title('Distribution of Dog Breeds')
+    plt.title('Distribution of Dog Breeds (Top 25)')
     
     # Ensure the aspect ratio of the plot is equal so the pie chart appears as a circle
     plt.axis('equal')
